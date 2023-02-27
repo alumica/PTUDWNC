@@ -159,7 +159,7 @@ namespace TatBlog.Services.Blogs
         // Xóa một thẻ theo mã cho trước
         public async Task DeleteTagWithId(
             int id,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken = default)
         {
             await _context.Set<Tag>()
                 .Where(t => t.Id == id)

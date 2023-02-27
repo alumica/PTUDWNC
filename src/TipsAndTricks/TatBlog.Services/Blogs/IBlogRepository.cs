@@ -61,6 +61,6 @@ namespace TatBlog.Services.Blogs
         // Xóa một thẻ theo mã cho trước
         Task DeleteTagWithId(
             int id,
-            CancellationToken cancellationToken);
+            CancellationToken cancellationToken = default);
     }
 }
