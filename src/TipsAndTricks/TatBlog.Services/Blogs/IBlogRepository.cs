@@ -48,19 +48,52 @@ namespace TatBlog.Services.Blogs
             CancellationToken cancellationToken = default);
 
         // C. Bài tập thực hành
-        // Tìm một thẻ (Tag) theo tên định danh (slug)
+        // 1.
+        // 1.a. Tìm một thẻ (Tag) theo tên định danh (slug).
         Task<Tag> FindTagWithSlugAsync(
             string slug,
             CancellationToken cancellationToken = default);
 
-        // Lấy danh sách tất cả các thẻ (Tag) kèm theo
-        // số bài viết chứa thẻ đó. Kết quả trả về kiểu IList<TagItem>
+        // 1.c. Lấy danh sách tất cả các thẻ (Tag) kèm theo
+        // số bài viết chứa thẻ đó. Kết quả trả về kiểu IList<TagItem>.
         Task<IList<TagItem>> GetTagItemsAsync(
             CancellationToken cancellationToken = default);
 
-        // Xóa một thẻ theo mã cho trước
+        // 1.d. Xóa một thẻ theo mã cho trước.
         Task DeleteTagWithId(
             int id,
             CancellationToken cancellationToken = default);
+
+        // 1.e. Tìm một chuyên mục (Category) theo tên định danh (slug).
+        Task<Category> FindCategoryWithSlugAsync(
+            string slug,
+            CancellationToken cancellationToken = default);
+
+        // 1.f. Tìm một chuyên mục theo mã số cho trước.
+        Task<Category> FindCategoryWithIdAsync(
+            int id,
+            CancellationToken cancellationToken = default);
+
+        // 1.g. Thêm hoặc cập nhật một chuyên mục/chủ đề. 
+        Task AddOrUpdateCategory(
+            CancellationToken cancellationToken = default);
+
+        // 1.h. Xóa một chuyên mục theo mã số cho trước.
+        Task DeleteCategoryWithId(
+            int id,
+            CancellationToken cancellationToken = default);
+
+        // 1.i. Kiểm tra tên định danh (slug) của
+        // một chuyên mục đã tồn tại hay chưa.
+        Task IsCategorySlugExistedAsync(
+            string slug,
+            CancellationToken cancellationToken = default);
+
+        // 1.j. Lấy và phân trang danh sách chuyên mục,
+        // kết quả trả về kiểu IPagedList<CategoryItem>.
+        Task<IPagedList<CategoryItem>> GetPagedCategoriesAsync(
+            IPagingParams pagingParams,
+            CancellationToken cancellationToken = default);
+
     }
 }

@@ -15,12 +15,12 @@ seeder.Initialize();
 // Tạo đối tượng BlogRepository
 IBlogRepository blogRepo = new BlogRepository(context);
 
-var categories = await blogRepo.GetCategoriesAsync();
+var tagItems = await blogRepo.GetTagItemsAsync();
 
-foreach (var item in categories)
+foreach (var item in tagItems)
 {
-    Console.WriteLine("{0,-5}{1,-50}{2,10}", item.Id, item.Name, item.PostCount);
+    Console.WriteLine("{0,-5}{1,-50}{2,-10}",
+        item.Id, item.Name, item.PostCount);
 }
-
 
 Console.ReadLine();

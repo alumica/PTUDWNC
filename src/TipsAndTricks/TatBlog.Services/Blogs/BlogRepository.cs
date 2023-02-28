@@ -152,8 +152,18 @@ namespace TatBlog.Services.Blogs
         public async Task<IList<TagItem>> GetTagItemsAsync(
             CancellationToken cancellationToken = default)
         {
-            var tagItemsQuery = _context.Set<TagItem>();
-            return await tagItemsQuery.ToListAsync(cancellationToken);
+            var tagItemsQuery = _context.Set<Tag>();
+            return await tagItemsQuery
+                .OrderBy(x => x.Name)
+                .Select(x => new TagItem()
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    UrlSlug = x.UrlSlug,
+                    Description= x.Description,
+                    PostCount = x.Posts.Count(p => p.Published)
+                })
+                .ToListAsync(cancellationToken);
         }
 
         // Xóa một thẻ theo mã cho trước
@@ -164,6 +174,44 @@ namespace TatBlog.Services.Blogs
             await _context.Set<Tag>()
                 .Where(t => t.Id == id)
                 .ExecuteDeleteAsync(cancellationToken);
+        }
+
+        // Tìm một chuyên mục (Category) theo tên định danh (slug)
+        public async Task<Category> FindCategoryWithSlugAsync(
+            string slug,
+            CancellationToken cancellationToken = default)
+        {
+            IQueryable<Category> categoriesQuery = _context.Set<Category>();
+            if (!string.IsNullOrWhiteSpace(slug))
+            {
+                categoriesQuery = categoriesQuery.Where(x => x.UrlSlug == slug);
+            }
+            return await categoriesQuery.FirstOrDefaultAsync(cancellationToken);
+        }
+
+        public Task<Category> FindCategoryWithIdAsync(int id, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task AddOrUpdateCategory(CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task DeleteCategoryWithId(int id, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task IsCategorySlugExistedAsync(string slug, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IPagedList<CategoryItem>> GetPagedCategoriesAsync(IPagingParams pagingParams, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
         }
     }
 }
