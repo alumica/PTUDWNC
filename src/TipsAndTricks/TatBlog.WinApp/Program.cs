@@ -23,4 +23,7 @@ foreach (var item in tagItems)
         item.Id, item.Name, item.PostCount);
 }
 
+var ctg = await blogRepo.FindCategoryWithIdAsync(4);
+
+
 Console.ReadLine();

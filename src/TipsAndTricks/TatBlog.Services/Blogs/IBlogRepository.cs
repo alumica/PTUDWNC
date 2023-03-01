@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TatBlog.Core.Constants;
 using TatBlog.Core.Contracts;
 using TatBlog.Core.DTO;
 using TatBlog.Core.Entities;
@@ -75,17 +76,19 @@ namespace TatBlog.Services.Blogs
             CancellationToken cancellationToken = default);
 
         // 1.g. Thêm hoặc cập nhật một chuyên mục/chủ đề. 
-        Task AddOrUpdateCategory(
+        Task AddOrUpdateCategoryAsync(
+            Category category,
             CancellationToken cancellationToken = default);
 
         // 1.h. Xóa một chuyên mục theo mã số cho trước.
-        Task DeleteCategoryWithId(
+        Task DeleteCategoryWithIdAsync(
             int id,
             CancellationToken cancellationToken = default);
 
         // 1.i. Kiểm tra tên định danh (slug) của
         // một chuyên mục đã tồn tại hay chưa.
-        Task IsCategorySlugExistedAsync(
+        Task<bool> IsCategorySlugExistedAsync(
+            int id,
             string slug,
             CancellationToken cancellationToken = default);
 
@@ -95,5 +98,54 @@ namespace TatBlog.Services.Blogs
             IPagingParams pagingParams,
             CancellationToken cancellationToken = default);
 
+        // 1.k. Đếm số lượng bài viết trong N tháng gần nhất.
+        // N là tham số đầu vào. Kết quả là một danh sách
+        // các đối tượng chứa các thông tin sau:
+        // Năm, Tháng, Số bài viết.
+        Task<IList<PostItem>> CountPostsNMonthAsync(
+            int n,
+            CancellationToken cancellationToken = default);
+
+        // 1.l. Tìm một bài viết theo mã số
+        Task<Post> FindPostWithIdAsync(
+            int id,
+            CancellationToken cancellationToken = default);
+
+        // 1.m. Thêm hay cập nhật một bài viết.
+        Task AddOrUpdatePostAsync(
+            Post post,
+            CancellationToken cancellationToken = default);
+
+        // 1.n. Chuyển đổi trạng thái Published của bài viết. 
+        Task SwitchPublisedAsync(
+            int id,
+            bool b,
+            CancellationToken cancellationToken = default);
+
+        // 1.o. Lấy ngẫu nhiên N bài viết. N là tham số đầu vào. 
+        Task<IList<Post>> GetRandomNPostsAsync(
+            int n,
+            CancellationToken cancellationToken = default);
+
+        // 1.p. Tạo lớp PostQuery để lưu trữ các điều kiện
+        // tìm kiếm bài viết. Chẳng hạn: mã tác giả, mã chuyên mục,
+        // tên ký hiệu chuyên mục, năm/tháng đăng bài, từ khóa, ...
+
+        // 1.q. Tìm tất cả bài viết thỏa mãn điều kiện tìm kiếm được
+        // cho trong đối tượng PostQuery(kết quả trả về kiểu IList<Post>).
+        Task<IList<Post>> FindAllPostsWithPostQueryAsync(
+            PostQuery pq,
+            CancellationToken cancellationToken = default);
+
+        // 1.r. Đếm số lượng bài viết thỏa mãn điều kiện tìm kiếm được cho trong đối tượng PostQuery.
+        Task<int> CountPostsWithPostQueryAsync(
+            PostQuery pq,
+            CancellationToken cancellationToken = default);
+
+        // 1.s.Tìm và phân trang các bài viết thỏa mãn điều kiện tìm kiếm được cho trong đối tượng PostQuery(kết quả trả về kiểu IPagedList<Post>)
+        Task<IPagedList<Post>> GetPagedPostQueryAsync(
+            PostQuery pq,
+            CancellationToken cancellationToken = default);
+        // 1.t. Tương tự câu trên nhưng yêu cầu trả về kiểu IPagedList<T>.Trong đó T là kiểu dữ liệu của đối tượng mới được tạo từ đối tượng Post.Hàm này có thêm một đầu vào là Func<IQueryable<Post>, IQueryable<T>> mapper để ánh xạ các đối tượng Post thành các đối tượng T theo yêu cầu.
     }
 }
