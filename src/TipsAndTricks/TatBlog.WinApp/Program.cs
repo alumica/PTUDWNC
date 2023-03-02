@@ -25,5 +25,43 @@ foreach (var item in tagItems)
 
 var ctg = await blogRepo.FindCategoryWithIdAsync(4);
 
+var authors = context.Authors.ToList();
+foreach (var author in authors)
+{
+    Console.WriteLine("{0,-4}{1,-30}{2,-30}{3,-12}",
+        author.Id, author.FullName, author.Email, author.JoinedDate);
+}
+  await blogRepo.DeleteTagWithIdAsync(2);
+
+var posts = context.Posts
+    .Where(x => x.Published)
+    .OrderBy(x => x.Title)
+    .Select(p => new
+    {
+        Id = p.Id,
+        Title = p.Title,
+        ViewCount = p.ViewCount,
+        PostedDate = p.PostedDate,
+        Author = p.Author.FullName,
+        Category = p.Category.Name,
+        Tags = p.Tags,
+    })
+    .ToList();
+
+foreach (var post in posts)
+{
+    Console.WriteLine("ID       :{0}", post.Id);
+    Console.WriteLine("Title    :{0}", post.Title);
+    Console.WriteLine("View     :{0}", post.ViewCount);
+    Console.WriteLine("Date     :{0}:MM/dd/yyyy", post.PostedDate);
+    Console.WriteLine("Author   :{0}", post.Author);
+    Console.WriteLine("Category :{0}", post.Category);
+    Console.WriteLine("Tags :{0}", post.Tags.Count);
+    Console.WriteLine("".PadRight(80, '-'));
+}
+
+var findtag = await blogRepo.FindTagWithSlugAsync("google-application");
+
+Console.WriteLine(findtag.Id + " " + findtag.Name);
 
 Console.ReadLine();

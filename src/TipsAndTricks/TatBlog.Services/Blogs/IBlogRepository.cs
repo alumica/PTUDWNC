@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TatBlog.Core.Constants;
 using TatBlog.Core.Contracts;
 using TatBlog.Core.DTO;
 using TatBlog.Core.Entities;
@@ -61,7 +60,7 @@ namespace TatBlog.Services.Blogs
             CancellationToken cancellationToken = default);
 
         // 1.d. Xóa một thẻ theo mã cho trước.
-        Task DeleteTagWithId(
+        Task DeleteTagWithIdAsync(
             int id,
             CancellationToken cancellationToken = default);
 

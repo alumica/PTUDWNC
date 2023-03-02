@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TatBlog.Core.Constants;
 using TatBlog.Core.Contracts;
 using TatBlog.Core.DTO;
 using TatBlog.Core.Entities;
@@ -135,7 +134,8 @@ namespace TatBlog.Services.Blogs
 
 
         // C. Bài tập thực hành
-        // Tìm một thẻ (Tag) theo tên định danh (slug)
+        // 1.
+        // 1.a. Tìm một thẻ (Tag) theo tên định danh (slug).
         public async Task<Tag> FindTagWithSlugAsync(
             string slug,
             CancellationToken cancellationToken = default)
@@ -148,8 +148,8 @@ namespace TatBlog.Services.Blogs
             return await tagsQuery.FirstOrDefaultAsync(cancellationToken);
         }
 
-        // Lấy danh sách tất cả các thẻ (Tag) kèm theo
-        // số bài viết chứa thẻ đó. Kết quả trả về kiểu IList<TagItem>
+        // 1.c. Lấy danh sách tất cả các thẻ (Tag) kèm theo
+        // số bài viết chứa thẻ đó. Kết quả trả về kiểu IList<TagItem>.
         public async Task<IList<TagItem>> GetTagItemsAsync(
             CancellationToken cancellationToken = default)
         {
@@ -167,11 +167,24 @@ namespace TatBlog.Services.Blogs
                 .ToListAsync(cancellationToken);
         }
 
-        // Xóa một thẻ theo mã cho trước
-        public async Task DeleteTagWithId(
+        // 1.d. Xóa một thẻ theo mã cho trước.
+        public async Task DeleteTagWithIdAsync(
             int id,
             CancellationToken cancellationToken = default)
         {
+            //await _context.Set<Tag>()
+            //    .Include(t => t.Posts)
+            //    .Where(x => x.Id == id)
+            //    .ExecuteDeleteAsync(cancellationToken);
+
+            //await _context.Set<Tag>()
+            //    .Where(t => t.Id == id)
+            //    .ExecuteDeleteAsync(cancellationToken);
+
+
+           await _context.Database
+               .ExecuteSqlRawAsync("DELETE FROM PostTags WHERE TagId = " + id, cancellationToken);
+
             await _context.Set<Tag>()
                 .Where(t => t.Id == id)
                 .ExecuteDeleteAsync(cancellationToken);
@@ -195,9 +208,8 @@ namespace TatBlog.Services.Blogs
             int id,
             CancellationToken cancellationToken = default)
         {
-            IQueryable<Category> categoriesQuery = _context.Set<Category>()
-                .Where(x => x.Id == id);
-            return await categoriesQuery.FirstOrDefaultAsync(cancellationToken);
+            return await _context.Set<Category>()
+                .Where(x => x.Id == id).FirstOrDefaultAsync(cancellationToken);
         }
 
         // 1.g. Thêm hoặc cập nhật một chuyên mục/chủ đề. 
@@ -205,21 +217,25 @@ namespace TatBlog.Services.Blogs
             Category category,
             CancellationToken cancellationToken = default)
         {
-            var isExisted = _context.Set<Category>()
-                .AnyAsync(x => x.Name == category.Name || x.UrlSlug == category.UrlSlug).Result;
-
-            if (isExisted) // true: update || false: add
-                await _context.Set<Category>()
-                .Where(c => c.Id == category.Id)
-                .ExecuteUpdateAsync(c => c
-                    .SetProperty(x => x.Name, x => x.Name + category.Name)
-                    .SetProperty(x => x.UrlSlug, x => x.UrlSlug + category.UrlSlug)
-                    .SetProperty(x => x.Description, x => x.Description + category.Description), cancellationToken);
+            if (IsCategorySlugExistedAsync(category.Id, category.UrlSlug).Result)
+                Console.WriteLine("Error: Exsited Slug");
             else
-            {
-                _context.AddRange(category);
-                _context.SaveChanges();
-            }
+
+                if (category.Id > 0) // true: update || false: add
+                    await _context.Set<Category>()
+                    .Where(c => c.Id == category.Id)
+                    .ExecuteUpdateAsync(c => c
+                        .SetProperty(x => x.Name, x => category.Name)
+                        .SetProperty(x => x.UrlSlug, x => category.UrlSlug)
+                        .SetProperty(x => x.Description, x => category.Description)
+                        .SetProperty(x => x.ShowOnMenu, category.ShowOnMenu)
+                        .SetProperty(x => x.Posts, category.Posts),
+                        cancellationToken);
+                else
+                {
+                    _context.Categories.Add(category);
+                    _context.SaveChanges();
+                }
         }
 
         // 1.h. Xóa một chuyên mục theo mã số cho trước.
@@ -227,9 +243,12 @@ namespace TatBlog.Services.Blogs
             int id,
             CancellationToken cancellationToken = default)
         {
-            await _context.Set<Category>()
-                .Where(c => c.Id == id)
-                .ExecuteDeleteAsync(cancellationToken);
+            //await _context.Database
+            //   .ExecuteSqlRawAsync("DELETE FROM PostTags WHERE TagId = " + id, cancellationToken);
+
+            //await _context.Set<Tag>()
+            //    .Where(t => t.Id == id)
+            //    .ExecuteDeleteAsync(cancellationToken);
         }
 
         // 1.i. Kiểm tra tên định danh (slug) của
@@ -267,8 +286,9 @@ namespace TatBlog.Services.Blogs
         // N là tham số đầu vào. Kết quả là một danh sách
         // các đối tượng chứa các thông tin sau:
         // Năm, Tháng, Số bài viết.
-        public Task<IList<PostItem>> CountPostsNMonthAsync(int n, CancellationToken cancellationToken = default)
+        public async Task<IList<PostItem>> CountPostsNMonthAsync(int n, CancellationToken cancellationToken = default)
         {
+            
             throw new NotImplementedException();
         }
 
@@ -277,9 +297,9 @@ namespace TatBlog.Services.Blogs
             int id, 
             CancellationToken cancellationToken = default)
         {
-            IQueryable<Post> postsQuery = _context.Set<Post>()
-                .Where(x => x.Id == id);
-            return await postsQuery.FirstOrDefaultAsync(cancellationToken);
+            return await _context.Set<Post>()
+                .Where(x => x.Id == id)
+                .FirstOrDefaultAsync(cancellationToken);
         }
 
         // 1.m. Thêm hay cập nhật một bài viết.
@@ -287,22 +307,29 @@ namespace TatBlog.Services.Blogs
             Post post,
             CancellationToken cancellationToken = default)
         {
-            var isExisted = _context.Set<Post>()
-                .AnyAsync(x => x.Title == post.Title || x.UrlSlug == post.UrlSlug).Result;
+            if (IsPostSlugExistedAsync(post.Id, post.UrlSlug).Result)
+                Console.WriteLine("Error: Existed Slug");
+            else
 
-            if (isExisted) // true: update || false: add
+            if (post.Id > 0) // true: update || false: add
                 await _context.Set<Post>()
                 .Where(p => p.Id == post.Id)
                 .ExecuteUpdateAsync(p => p
-                    .SetProperty(x => x.Title, x => x.Title + post.Title)
-                    .SetProperty(x => x.UrlSlug, x => x.UrlSlug + post.UrlSlug)
-                    .SetProperty(x => x.ShortDescription, x => x.ShortDescription + post.ShortDescription)
-                    .SetProperty(x => x.Description, x => x.Description + post.Description)
-                    .SetProperty(x => x.Meta, x => x.Meta + post.Meta)
-                    .SetProperty(x => x.ImageUrl, x => x.ImageUrl + post.ImageUrl)
-                    .SetProperty(x => x.ViewCount, x => x.ViewCount + post.ViewCount)
+                    .SetProperty(x => x.Title, x => post.Title)
+                    .SetProperty(x => x.UrlSlug, x => post.UrlSlug)
+                    .SetProperty(x => x.ShortDescription, x => post.ShortDescription)
+                    .SetProperty(x => x.Description, x => post.Description)
+                    .SetProperty(x => x.Meta, x => post.Meta)
+                    .SetProperty(x => x.ImageUrl, x => post.ImageUrl)
+                    .SetProperty(x => x.ViewCount, x => post.ViewCount)
                     .SetProperty(x => x.Published, x =>  post.Published)
-                    .SetProperty(x => x.PostedDate, x => post.PostedDate),
+                    .SetProperty(x => x.PostedDate, x => post.PostedDate)
+                    .SetProperty(x => x.ModifiedDate, x => post.ModifiedDate)
+                    .SetProperty(x => x.CategoryId, x => post.CategoryId)
+                    .SetProperty(x => x.AuthorId, x => post.AuthorId)
+                    .SetProperty(x => x.Category, x => post.Category)
+                    .SetProperty(x => x.Author, x => post.Author)
+                    .SetProperty(x => x.Tags, x => post.Tags),
                     cancellationToken);
             else
             {

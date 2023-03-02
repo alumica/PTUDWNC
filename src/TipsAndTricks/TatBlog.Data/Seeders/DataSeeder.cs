@@ -21,7 +21,7 @@ namespace TatBlog.Data.Seeders
         {
             _dbContext.Database.EnsureCreated();
 
-            if (_dbContext.Posts.Any()) return;
+            //if (_dbContext.Posts.Any()) return;
 
             var authors = AddAuthors();
             var categories = AddCategories();
@@ -68,10 +68,61 @@ namespace TatBlog.Data.Seeders
                     JoinedDate = new DateTime(2020, 04, 19),
                     ImageUrl = "",
                     Notes = ""
+                },
+                new()
+                {
+                    FullName = "Bui Van Du",
+                    UrlSlug = "bui-van-du",
+                    Email = "2011368@dlu.edu.com",
+                    JoinedDate = new DateTime(2020, 04, 19),
+                    ImageUrl = "",
+                    Notes = ""
+                },
+                new()
+                {
+                    FullName = "Dang Ngoc Thang",
+                    UrlSlug = "dang-ngoc-thang",
+                    Email = "2012378@dlu.edu.com",
+                    JoinedDate = new DateTime(2020, 04, 19),
+                    ImageUrl = "",
+                    Notes = ""
+                },
+                new()
+                {
+                    FullName = "Huynh Tan Thanh",
+                    UrlSlug = "huynh-tan-thanh",
+                    Email = "2011439@dlu.edu.com",
+                    JoinedDate = new DateTime(2020, 04, 19),
+                    ImageUrl = "",
+                    Notes = ""
+                },
+                new()
+                {
+                    FullName = "Doan Cao Nhat Ha",
+                    UrlSlug = "doan-cao-nhat-ha",
+                    Email = "2012353@dlu.edu.com",
+                    JoinedDate = new DateTime(2020, 04, 19),
+                    ImageUrl = "",
+                    Notes = ""
+                },
+                new()
+                {
+                    FullName = "Nguyen Tuan Kiet",
+                    UrlSlug = "nguyen-tuan-kiet",
+                    Email = "2011400@dlu.edu.com",
+                    JoinedDate = new DateTime(2020, 04, 19),
+                    ImageUrl = "",
+                    Notes = ""
                 }
             };
 
-            _dbContext.Authors.AddRange(authors);
+            foreach (var author in authors)
+            {
+                if (!_dbContext.Authors.Any(a => a.UrlSlug == author.UrlSlug))
+                    _dbContext.Authors.Add(author);
+            }
+
+            //_dbContext.Authors.AddRange(authors);
             _dbContext.SaveChanges();
 
             return authors;
@@ -88,7 +139,13 @@ namespace TatBlog.Data.Seeders
                 new() { Name ="OOP", Description="Object-Oriented Program", UrlSlug="oop", ShowOnMenu=true},
             };
 
-            _dbContext.AddRange(categories);
+            foreach (var category in categories)
+            {
+                if (!_dbContext.Categories.Any(c => c.UrlSlug == category.UrlSlug))
+                    _dbContext.Categories.Add(category);
+            }
+
+            // _dbContext.AddRange(categories);
             _dbContext.SaveChanges();
             return categories;
         }
@@ -103,7 +160,15 @@ namespace TatBlog.Data.Seeders
                 new() {Name ="Deep Learning", Description="Deep Learning", UrlSlug ="deep-learning"},
                 new() {Name ="Neural Network", Description="Neural Network", UrlSlug ="neural-network"}
             };
-            _dbContext.AddRange(tags);
+
+
+            foreach (var tag in tags)
+            {
+                if (!_dbContext.Tags.Any(t => t.UrlSlug == tag.UrlSlug))
+                    _dbContext.Tags.Add(tag);
+            }
+
+            // _dbContext.AddRange(tags);
             _dbContext.SaveChanges();
             return tags;
         }
@@ -173,8 +238,14 @@ namespace TatBlog.Data.Seeders
                     }
                 }
             };
-            
-            _dbContext.AddRange(posts);
+
+            foreach (var post in posts)
+            {
+                if (!_dbContext.Posts.Any(p => p.UrlSlug == post.UrlSlug))
+                    _dbContext.Posts.Add(post);
+            }
+
+            // _dbContext.AddRange(posts);
             _dbContext.SaveChanges();
 
             return posts;
