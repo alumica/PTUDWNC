@@ -31,7 +31,7 @@ foreach (var author in authors)
     Console.WriteLine("{0,-4}{1,-30}{2,-30}{3,-12}",
         author.Id, author.FullName, author.Email, author.JoinedDate);
 }
-  await blogRepo.DeleteTagWithIdAsync(2);
+ // await blogRepo.DeleteTagWithIdAsync(2);
 
 var posts = context.Posts
     .Where(x => x.Published)

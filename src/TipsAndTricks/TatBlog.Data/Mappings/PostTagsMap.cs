@@ -9,13 +9,18 @@ using TatBlog.Core.Entities;
 
 namespace TatBlog.Data.Mappings
 {
-    public class PostTagsMap : IEntityTypeConfiguration<PostTags>
-    {
-        public void Configure(EntityTypeBuilder<PostTags> builder)
-        {
-            builder.ToTable("Posts");
+    //public class PostTagsMap : IEntityTypeConfiguration<PostTags>
+    //{
+    //    public void Configure(EntityTypeBuilder<PostTags> builder)
+    //    {
+    //        builder.ToTable("Posts");
 
             
-        }
+    //    }
+    //}
+
+    public class PostTagsMap
+    {
+
     }
 }
