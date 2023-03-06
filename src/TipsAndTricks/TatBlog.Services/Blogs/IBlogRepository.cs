@@ -50,7 +50,7 @@ namespace TatBlog.Services.Blogs
         // C. Bài tập thực hành
         // 1.
         // 1.a. Tìm một thẻ (Tag) theo tên định danh (slug).
-        Task<Tag> FindTagWithSlugAsync(
+        Task<Tag> FindTagBySlugAsync(
             string slug,
             CancellationToken cancellationToken = default);
 
@@ -60,17 +60,17 @@ namespace TatBlog.Services.Blogs
             CancellationToken cancellationToken = default);
 
         // 1.d. Xóa một thẻ theo mã cho trước.
-        Task DeleteTagWithIdAsync(
+        Task DeleteTagByIdAsync(
             int id,
             CancellationToken cancellationToken = default);
 
         // 1.e. Tìm một chuyên mục (Category) theo tên định danh (slug).
-        Task<Category> FindCategoryWithSlugAsync(
+        Task<Category> FindCategoryBySlugAsync(
             string slug,
             CancellationToken cancellationToken = default);
 
         // 1.f. Tìm một chuyên mục theo mã số cho trước.
-        Task<Category> FindCategoryWithIdAsync(
+        Task<Category> FindCategoryByIdAsync(
             int id,
             CancellationToken cancellationToken = default);
 
@@ -80,7 +80,7 @@ namespace TatBlog.Services.Blogs
             CancellationToken cancellationToken = default);
 
         // 1.h. Xóa một chuyên mục theo mã số cho trước.
-        Task DeleteCategoryWithIdAsync(
+        Task DeleteCategoryByIdAsync(
             int id,
             CancellationToken cancellationToken = default);
 
@@ -106,7 +106,7 @@ namespace TatBlog.Services.Blogs
             CancellationToken cancellationToken = default);
 
         // 1.l. Tìm một bài viết theo mã số
-        Task<Post> FindPostWithIdAsync(
+        Task<Post> FindPostByIdAsync(
             int id,
             CancellationToken cancellationToken = default);
 
@@ -118,7 +118,6 @@ namespace TatBlog.Services.Blogs
         // 1.n. Chuyển đổi trạng thái Published của bài viết. 
         Task SwitchPublisedAsync(
             int id,
-            bool b,
             CancellationToken cancellationToken = default);
 
         // 1.o. Lấy ngẫu nhiên N bài viết. N là tham số đầu vào. 
@@ -144,7 +143,13 @@ namespace TatBlog.Services.Blogs
         // 1.s.Tìm và phân trang các bài viết thỏa mãn điều kiện tìm kiếm được cho trong đối tượng PostQuery(kết quả trả về kiểu IPagedList<Post>)
         Task<IPagedList<Post>> GetPagedPostQueryAsync(
             PostQuery pq,
+            IPagingParams pagingParams,
             CancellationToken cancellationToken = default);
+
         // 1.t. Tương tự câu trên nhưng yêu cầu trả về kiểu IPagedList<T>.Trong đó T là kiểu dữ liệu của đối tượng mới được tạo từ đối tượng Post.Hàm này có thêm một đầu vào là Func<IQueryable<Post>, IQueryable<T>> mapper để ánh xạ các đối tượng Post thành các đối tượng T theo yêu cầu.
+        Task<IPagedList<T>> GetPagedPostQueryAsync<T>(
+            PostQuery pq,
+            Func<IQueryable<Post>, IQueryable<T>> mapper,
+            CancellationToken cancellationToken = default);
     }
 }

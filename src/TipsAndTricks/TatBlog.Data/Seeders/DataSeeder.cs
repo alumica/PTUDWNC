@@ -113,6 +113,15 @@ namespace TatBlog.Data.Seeders
                     JoinedDate = new DateTime(2020, 04, 19),
                     ImageUrl = "",
                     Notes = ""
+                },
+                new()
+                {
+                    FullName = "Rick Anderson",
+                    UrlSlug = "rick-anderson",
+                    Email = "rickanderson99@motip.com",
+                    JoinedDate = new DateTime(2020, 04, 19),
+                    ImageUrl = "",
+                    Notes = ""
                 }
             };
 
@@ -158,7 +167,9 @@ namespace TatBlog.Data.Seeders
                 new() {Name ="ASP.NET MVC", Description="ASP.NET MVC", UrlSlug ="aspdotnet-mvc"},
                 new() {Name ="Razor Page", Description="Razor Page", UrlSlug ="razor-page"},
                 new() {Name ="Deep Learning", Description="Deep Learning", UrlSlug ="deep-learning"},
-                new() {Name ="Neural Network", Description="Neural Network", UrlSlug ="neural-network"}
+                new() {Name ="Neural Network", Description="Neural Network", UrlSlug ="neural-network"},
+                new() {Name =".NET", Description=".NET", UrlSlug ="dotnet"},
+                new() {Name ="Web apps", Description="Web apps", UrlSlug ="web-apps"}
             };
 
 
@@ -180,6 +191,69 @@ namespace TatBlog.Data.Seeders
         {
             var posts = new List<Post>()
             {
+                new()
+                {
+                    Title = "Part 3, add a view to an ASP.NET Core MVC app",
+                    ShortDescription = "Add a view",
+                    Description = "In this section, you modify the HelloWorldController class to use Razor view files. This cleanly encapsulates the process of generating HTML responses to a client.",
+                    Meta = "",
+                    UrlSlug = "adding-controller",
+                    ImageUrl = "",
+                    Published = true,
+                    PostedDate = new DateTime(2023, 03, 03, 10, 20, 0),
+                    ModifiedDate = null,
+                    ViewCount = 0,
+                    Author = authors[9],
+                    Category = categories[1],
+                    Tags = new List<Tag>()
+                    {
+                        tags[1],
+                        tags[5],
+                        tags[6]
+                    }
+                },
+                new()
+                {
+                    Title = "Part 2, add a controller to an ASP.NET Core MVC app",
+                    ShortDescription = "Add a controller",
+                    Description = "The Model-View-Controller (MVC) architectural pattern separates an app into three main components: Model, View, and Controller. The MVC pattern helps you create apps that are more testable and easier to update than traditional monolithic apps.",
+                    Meta = "",
+                    UrlSlug = "adding-controller",
+                    ImageUrl = "",
+                    Published = true,
+                    PostedDate = new DateTime(2023, 03, 03, 10, 20, 0),
+                    ModifiedDate = null,
+                    ViewCount = 0,
+                    Author = authors[9],
+                    Category = categories[1],
+                    Tags = new List<Tag>()
+                    {
+                        tags[1],
+                        tags[5],
+                        tags[6]
+                    }
+                },
+                new()
+                {
+                    Title = "Get started with ASP.NET Core MVC",
+                    ShortDescription = "Get started",
+                    Description = "This tutorial teaches ASP.NET Core MVC web development with controllers and views. If you're new to ASP.NET Core web development, consider the Razor Pages version of this tutorial, which provides an easier starting point. See Choose an ASP.NET Core UI, which compares Razor Pages, MVC, and Blazor for UI development.",
+                    Meta = "",
+                    UrlSlug = "start-mvc",
+                    ImageUrl = "",
+                    Published = true,
+                    PostedDate = new DateTime(2023, 03, 03, 10, 20, 0),
+                    ModifiedDate = null,
+                    ViewCount = 0,
+                    Author = authors[9],
+                    Category = categories[1],
+                    Tags = new List<Tag>()
+                    {
+                        tags[1],
+                        tags[5],
+                        tags[6]
+                    }
+                },
                 new()
                 {
                     Title = "Layout in ASP.NET Core",
