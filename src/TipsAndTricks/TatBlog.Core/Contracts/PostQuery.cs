@@ -10,6 +10,8 @@ namespace TatBlog.Core.DTO
     {
         public int AuthorId { get; set; }
 
+        public string AuthorSlug { get; set; }
+
         public int PostId { get; set; }
 
         public int CategoryId { get; set; }
@@ -23,5 +25,7 @@ namespace TatBlog.Core.DTO
         public int TagId { get; set; }
 
         public string TagSlug { get; set; }
+
+        public bool PublishedOnly { get; set; }
     }
 }

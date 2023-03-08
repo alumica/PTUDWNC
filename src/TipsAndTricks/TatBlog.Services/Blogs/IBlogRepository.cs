@@ -60,7 +60,7 @@ namespace TatBlog.Services.Blogs
             CancellationToken cancellationToken = default);
 
         // 1.d. Xóa một thẻ theo mã cho trước.
-        Task DeleteTagByIdAsync(
+        Task<bool> DeleteTagByIdAsync(
             int id,
             CancellationToken cancellationToken = default);
 
@@ -80,7 +80,7 @@ namespace TatBlog.Services.Blogs
             CancellationToken cancellationToken = default);
 
         // 1.h. Xóa một chuyên mục theo mã số cho trước.
-        Task DeleteCategoryByIdAsync(
+        Task<bool> DeleteCategoryByIdAsync(
             int id,
             CancellationToken cancellationToken = default);
 
@@ -116,7 +116,7 @@ namespace TatBlog.Services.Blogs
             CancellationToken cancellationToken = default);
 
         // 1.n. Chuyển đổi trạng thái Published của bài viết. 
-        Task SwitchPublisedAsync(
+        Task<bool> SwitchPublisedAsync(
             int id,
             CancellationToken cancellationToken = default);
 
@@ -131,12 +131,12 @@ namespace TatBlog.Services.Blogs
 
         // 1.q. Tìm tất cả bài viết thỏa mãn điều kiện tìm kiếm được
         // cho trong đối tượng PostQuery(kết quả trả về kiểu IList<Post>).
-        Task<IList<Post>> FindAllPostsWithPostQueryAsync(
+        Task<IList<Post>> FindAllPostsByPostQueryAsync(
             PostQuery pq,
             CancellationToken cancellationToken = default);
 
         // 1.r. Đếm số lượng bài viết thỏa mãn điều kiện tìm kiếm được cho trong đối tượng PostQuery.
-        Task<int> CountPostsWithPostQueryAsync(
+        Task<int> CountPostsByPostQueryAsync(
             PostQuery pq,
             CancellationToken cancellationToken = default);
 
@@ -146,9 +146,12 @@ namespace TatBlog.Services.Blogs
             IPagingParams pagingParams,
             CancellationToken cancellationToken = default);
 
+        IQueryable<Post> FilterPost(PostQuery pq);
+
         // 1.t. Tương tự câu trên nhưng yêu cầu trả về kiểu IPagedList<T>.Trong đó T là kiểu dữ liệu của đối tượng mới được tạo từ đối tượng Post.Hàm này có thêm một đầu vào là Func<IQueryable<Post>, IQueryable<T>> mapper để ánh xạ các đối tượng Post thành các đối tượng T theo yêu cầu.
         Task<IPagedList<T>> GetPagedPostQueryAsync<T>(
             PostQuery pq,
+            IPagingParams pagingParams,
             Func<IQueryable<Post>, IQueryable<T>> mapper,
             CancellationToken cancellationToken = default);
     }

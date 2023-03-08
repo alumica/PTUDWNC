@@ -243,7 +243,7 @@ async void Cau1q()
     {
         AuthorId = 3
     };
-    var posts = await blogRepo.FindAllPostsWithPostQueryAsync(pq);
+    var posts = await blogRepo.FindAllPostsByPostQueryAsync(pq);
 
     foreach (var post in posts)
     {
@@ -266,7 +266,7 @@ async void Cau1r()
     {
         AuthorId = 3
     };
-    int count = await blogRepo.CountPostsWithPostQueryAsync(pq);
+    int count = await blogRepo.CountPostsByPostQueryAsync(pq);
     Console.WriteLine("Count post: ", count);
 }
 
