@@ -21,7 +21,7 @@ namespace TatBlog.Data.Seeders
         {
             _dbContext.Database.EnsureCreated();
 
-            if (_dbContext.Posts.Any()) return;
+            //if (_dbContext.Posts.Any()) return;
 
             var authors = AddAuthors();
             var categories = AddCategories();
@@ -68,10 +68,70 @@ namespace TatBlog.Data.Seeders
                     JoinedDate = new DateTime(2020, 04, 19),
                     ImageUrl = "",
                     Notes = ""
+                },
+                new()
+                {
+                    FullName = "Bui Van Du",
+                    UrlSlug = "bui-van-du",
+                    Email = "2011368@dlu.edu.com",
+                    JoinedDate = new DateTime(2020, 04, 19),
+                    ImageUrl = "",
+                    Notes = ""
+                },
+                new()
+                {
+                    FullName = "Dang Ngoc Thang",
+                    UrlSlug = "dang-ngoc-thang",
+                    Email = "2012378@dlu.edu.com",
+                    JoinedDate = new DateTime(2020, 04, 19),
+                    ImageUrl = "",
+                    Notes = ""
+                },
+                new()
+                {
+                    FullName = "Huynh Tan Thanh",
+                    UrlSlug = "huynh-tan-thanh",
+                    Email = "2011439@dlu.edu.com",
+                    JoinedDate = new DateTime(2020, 04, 19),
+                    ImageUrl = "",
+                    Notes = ""
+                },
+                new()
+                {
+                    FullName = "Doan Cao Nhat Ha",
+                    UrlSlug = "doan-cao-nhat-ha",
+                    Email = "2012353@dlu.edu.com",
+                    JoinedDate = new DateTime(2020, 04, 19),
+                    ImageUrl = "",
+                    Notes = ""
+                },
+                new()
+                {
+                    FullName = "Nguyen Tuan Kiet",
+                    UrlSlug = "nguyen-tuan-kiet",
+                    Email = "2011400@dlu.edu.com",
+                    JoinedDate = new DateTime(2020, 04, 19),
+                    ImageUrl = "",
+                    Notes = ""
+                },
+                new()
+                {
+                    FullName = "Rick Anderson",
+                    UrlSlug = "rick-anderson",
+                    Email = "rickanderson99@motip.com",
+                    JoinedDate = new DateTime(2020, 04, 19),
+                    ImageUrl = "",
+                    Notes = ""
                 }
             };
 
-            _dbContext.Authors.AddRange(authors);
+            foreach (var author in authors)
+            {
+                if (!_dbContext.Authors.Any(a => a.UrlSlug == author.UrlSlug))
+                    _dbContext.Authors.Add(author);
+            }
+
+            //_dbContext.Authors.AddRange(authors);
             _dbContext.SaveChanges();
 
             return authors;
@@ -88,7 +148,13 @@ namespace TatBlog.Data.Seeders
                 new() { Name ="OOP", Description="Object-Oriented Program", UrlSlug="oop", ShowOnMenu=true},
             };
 
-            _dbContext.AddRange(categories);
+            foreach (var category in categories)
+            {
+                if (!_dbContext.Categories.Any(c => c.UrlSlug == category.UrlSlug))
+                    _dbContext.Categories.Add(category);
+            }
+
+            // _dbContext.AddRange(categories);
             _dbContext.SaveChanges();
             return categories;
         }
@@ -101,9 +167,19 @@ namespace TatBlog.Data.Seeders
                 new() {Name ="ASP.NET MVC", Description="ASP.NET MVC", UrlSlug ="aspdotnet-mvc"},
                 new() {Name ="Razor Page", Description="Razor Page", UrlSlug ="razor-page"},
                 new() {Name ="Deep Learning", Description="Deep Learning", UrlSlug ="deep-learning"},
-                new() {Name ="Neural Network", Description="Neural Network", UrlSlug ="neural-network"}
+                new() {Name ="Neural Network", Description="Neural Network", UrlSlug ="neural-network"},
+                new() {Name =".NET", Description=".NET", UrlSlug ="dotnet"},
+                new() {Name ="Web apps", Description="Web apps", UrlSlug ="web-apps"}
             };
-            _dbContext.AddRange(tags);
+
+
+            foreach (var tag in tags)
+            {
+                if (!_dbContext.Tags.Any(t => t.UrlSlug == tag.UrlSlug))
+                    _dbContext.Tags.Add(tag);
+            }
+
+            // _dbContext.AddRange(tags);
             _dbContext.SaveChanges();
             return tags;
         }
@@ -115,6 +191,69 @@ namespace TatBlog.Data.Seeders
         {
             var posts = new List<Post>()
             {
+                new()
+                {
+                    Title = "Part 3, add a view to an ASP.NET Core MVC app",
+                    ShortDescription = "Add a view",
+                    Description = "In this section, you modify the HelloWorldController class to use Razor view files. This cleanly encapsulates the process of generating HTML responses to a client.",
+                    Meta = "",
+                    UrlSlug = "adding-controller",
+                    ImageUrl = "",
+                    Published = true,
+                    PostedDate = new DateTime(2023, 03, 03, 10, 20, 0),
+                    ModifiedDate = null,
+                    ViewCount = 0,
+                    Author = authors[9],
+                    Category = categories[1],
+                    Tags = new List<Tag>()
+                    {
+                        tags[1],
+                        tags[5],
+                        tags[6]
+                    }
+                },
+                new()
+                {
+                    Title = "Part 2, add a controller to an ASP.NET Core MVC app",
+                    ShortDescription = "Add a controller",
+                    Description = "The Model-View-Controller (MVC) architectural pattern separates an app into three main components: Model, View, and Controller. The MVC pattern helps you create apps that are more testable and easier to update than traditional monolithic apps.",
+                    Meta = "",
+                    UrlSlug = "adding-controller",
+                    ImageUrl = "",
+                    Published = true,
+                    PostedDate = new DateTime(2023, 03, 03, 10, 20, 0),
+                    ModifiedDate = null,
+                    ViewCount = 0,
+                    Author = authors[9],
+                    Category = categories[1],
+                    Tags = new List<Tag>()
+                    {
+                        tags[1],
+                        tags[5],
+                        tags[6]
+                    }
+                },
+                new()
+                {
+                    Title = "Get started with ASP.NET Core MVC",
+                    ShortDescription = "Get started",
+                    Description = "This tutorial teaches ASP.NET Core MVC web development with controllers and views. If you're new to ASP.NET Core web development, consider the Razor Pages version of this tutorial, which provides an easier starting point. See Choose an ASP.NET Core UI, which compares Razor Pages, MVC, and Blazor for UI development.",
+                    Meta = "",
+                    UrlSlug = "start-mvc",
+                    ImageUrl = "",
+                    Published = true,
+                    PostedDate = new DateTime(2023, 03, 03, 10, 20, 0),
+                    ModifiedDate = null,
+                    ViewCount = 0,
+                    Author = authors[9],
+                    Category = categories[1],
+                    Tags = new List<Tag>()
+                    {
+                        tags[1],
+                        tags[5],
+                        tags[6]
+                    }
+                },
                 new()
                 {
                     Title = "Layout in ASP.NET Core",
@@ -173,8 +312,14 @@ namespace TatBlog.Data.Seeders
                     }
                 }
             };
-            
-            _dbContext.AddRange(posts);
+
+            foreach (var post in posts)
+            {
+                if (!_dbContext.Posts.Any(p => p.UrlSlug == post.UrlSlug))
+                    _dbContext.Posts.Add(post);
+            }
+
+            // _dbContext.AddRange(posts);
             _dbContext.SaveChanges();
 
             return posts;

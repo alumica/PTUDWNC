@@ -48,19 +48,111 @@ namespace TatBlog.Services.Blogs
             CancellationToken cancellationToken = default);
 
         // C. Bài tập thực hành
-        // Tìm một thẻ (Tag) theo tên định danh (slug)
-        Task<Tag> FindTagWithSlugAsync(
+        // 1.
+        // 1.a. Tìm một thẻ (Tag) theo tên định danh (slug).
+        Task<Tag> FindTagBySlugAsync(
             string slug,
             CancellationToken cancellationToken = default);
 
-        // Lấy danh sách tất cả các thẻ (Tag) kèm theo
-        // số bài viết chứa thẻ đó. Kết quả trả về kiểu IList<TagItem>
+        // 1.c. Lấy danh sách tất cả các thẻ (Tag) kèm theo
+        // số bài viết chứa thẻ đó. Kết quả trả về kiểu IList<TagItem>.
         Task<IList<TagItem>> GetTagItemsAsync(
             CancellationToken cancellationToken = default);
 
-        // Xóa một thẻ theo mã cho trước
-        Task DeleteTagWithId(
+        // 1.d. Xóa một thẻ theo mã cho trước.
+        Task<bool> DeleteTagByIdAsync(
             int id,
-            CancellationToken cancellationToken);
+            CancellationToken cancellationToken = default);
+
+        // 1.e. Tìm một chuyên mục (Category) theo tên định danh (slug).
+        Task<Category> FindCategoryBySlugAsync(
+            string slug,
+            CancellationToken cancellationToken = default);
+
+        // 1.f. Tìm một chuyên mục theo mã số cho trước.
+        Task<Category> FindCategoryByIdAsync(
+            int id,
+            CancellationToken cancellationToken = default);
+
+        // 1.g. Thêm hoặc cập nhật một chuyên mục/chủ đề. 
+        Task AddOrUpdateCategoryAsync(
+            Category category,
+            CancellationToken cancellationToken = default);
+
+        // 1.h. Xóa một chuyên mục theo mã số cho trước.
+        Task<bool> DeleteCategoryByIdAsync(
+            int id,
+            CancellationToken cancellationToken = default);
+
+        // 1.i. Kiểm tra tên định danh (slug) của
+        // một chuyên mục đã tồn tại hay chưa.
+        Task<bool> IsCategorySlugExistedAsync(
+            int id,
+            string slug,
+            CancellationToken cancellationToken = default);
+
+        // 1.j. Lấy và phân trang danh sách chuyên mục,
+        // kết quả trả về kiểu IPagedList<CategoryItem>.
+        Task<IPagedList<CategoryItem>> GetPagedCategoriesAsync(
+            IPagingParams pagingParams,
+            CancellationToken cancellationToken = default);
+
+        // 1.k. Đếm số lượng bài viết trong N tháng gần nhất.
+        // N là tham số đầu vào. Kết quả là một danh sách
+        // các đối tượng chứa các thông tin sau:
+        // Năm, Tháng, Số bài viết.
+        Task<IList<PostItem>> CountPostsNMonthAsync(
+            int n,
+            CancellationToken cancellationToken = default);
+
+        // 1.l. Tìm một bài viết theo mã số
+        Task<Post> FindPostByIdAsync(
+            int id,
+            CancellationToken cancellationToken = default);
+
+        // 1.m. Thêm hay cập nhật một bài viết.
+        Task AddOrUpdatePostAsync(
+            Post post,
+            CancellationToken cancellationToken = default);
+
+        // 1.n. Chuyển đổi trạng thái Published của bài viết. 
+        Task<bool> SwitchPublisedAsync(
+            int id,
+            CancellationToken cancellationToken = default);
+
+        // 1.o. Lấy ngẫu nhiên N bài viết. N là tham số đầu vào. 
+        Task<IList<Post>> GetRandomNPostsAsync(
+            int n,
+            CancellationToken cancellationToken = default);
+
+        // 1.p. Tạo lớp PostQuery để lưu trữ các điều kiện
+        // tìm kiếm bài viết. Chẳng hạn: mã tác giả, mã chuyên mục,
+        // tên ký hiệu chuyên mục, năm/tháng đăng bài, từ khóa, ...
+
+        // 1.q. Tìm tất cả bài viết thỏa mãn điều kiện tìm kiếm được
+        // cho trong đối tượng PostQuery(kết quả trả về kiểu IList<Post>).
+        Task<IList<Post>> FindAllPostsByPostQueryAsync(
+            PostQuery pq,
+            CancellationToken cancellationToken = default);
+
+        // 1.r. Đếm số lượng bài viết thỏa mãn điều kiện tìm kiếm được cho trong đối tượng PostQuery.
+        Task<int> CountPostsByPostQueryAsync(
+            PostQuery pq,
+            CancellationToken cancellationToken = default);
+
+        // 1.s.Tìm và phân trang các bài viết thỏa mãn điều kiện tìm kiếm được cho trong đối tượng PostQuery(kết quả trả về kiểu IPagedList<Post>)
+        Task<IPagedList<Post>> GetPagedPostQueryAsync(
+            PostQuery pq,
+            IPagingParams pagingParams,
+            CancellationToken cancellationToken = default);
+
+        IQueryable<Post> FilterPost(PostQuery pq);
+
+        // 1.t. Tương tự câu trên nhưng yêu cầu trả về kiểu IPagedList<T>.Trong đó T là kiểu dữ liệu của đối tượng mới được tạo từ đối tượng Post.Hàm này có thêm một đầu vào là Func<IQueryable<Post>, IQueryable<T>> mapper để ánh xạ các đối tượng Post thành các đối tượng T theo yêu cầu.
+        Task<IPagedList<T>> GetPagedPostQueryAsync<T>(
+            PostQuery pq,
+            IPagingParams pagingParams,
+            Func<IQueryable<Post>, IQueryable<T>> mapper,
+            CancellationToken cancellationToken = default);
     }
 }
