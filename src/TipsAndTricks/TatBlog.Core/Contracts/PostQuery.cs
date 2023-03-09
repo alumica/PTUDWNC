@@ -27,5 +27,7 @@ namespace TatBlog.Core.DTO
         public string TagSlug { get; set; }
 
         public bool PublishedOnly { get; set; }
+
+        public string Keyword { get; set; }
     }
 }
