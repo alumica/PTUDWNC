@@ -402,8 +402,33 @@ namespace TatBlog.Services.Blogs
             PostQuery pq,
             CancellationToken cancellationToken = default)
         {
-            return await FilterPost(pq)
+            //return await _context.Set<Post>()
+            //    .Include(c => c.Category)
+            //    .Include(t => t.Tags)
+            //    .WhereIf(pq.AuthorId > 0, p => p.AuthorId == pq.AuthorId)
+            //    .WhereIf(!string.IsNullOrWhiteSpace(pq.AuthorSlug), p => p.UrlSlug == pq.AuthorSlug)
+            //    .WhereIf(pq.PostId > 0, p => p.Id == pq.PostId)
+            //    .WhereIf(pq.CategoryId > 0, p => p.CategoryId == pq.CategoryId)
+            //    .WhereIf(!string.IsNullOrWhiteSpace(pq.CategorySlug), p => p.Category.UrlSlug == pq.CategorySlug)
+            //    .WhereIf(pq.PostedYear > 0, p => p.PostedDate.Year == pq.PostedYear)
+            //    .WhereIf(pq.PostedMonth > 0, p => p.PostedDate.Month == pq.PostedMonth)
+            //    .WhereIf(pq.TagId > 0, p => p.Tags.Any(x => x.Id == pq.TagId))
+            //    .WhereIf(!string.IsNullOrWhiteSpace(pq.TagSlug), p => p.Tags.Any(x => x.UrlSlug == pq.TagSlug))
+            //    .WhereIf(pq.PublishedOnly != null, p => p.Published == pq.PublishedOnly)
+            //    .ToListAsync(cancellationToken);
+            return await _context.Set<Post>()
+                .Include(c => c.Category)
+                .Include(t => t.Tags)
+                .WhereIf(pq.AuthorId > 0, p => p.AuthorId == pq.AuthorId)
+                .WhereIf(pq.PostId > 0, p => p.Id == pq.PostId)
+                .WhereIf(pq.CategoryId > 0, p => p.CategoryId == pq.CategoryId)
+                .WhereIf(!string.IsNullOrWhiteSpace(pq.CategorySlug), p => p.Category.UrlSlug == pq.CategorySlug)
+                .WhereIf(pq.PostedYear > 0, p => p.PostedDate.Year == pq.PostedYear)
+                .WhereIf(pq.PostedMonth > 0, p => p.PostedDate.Month == pq.PostedMonth)
+                .WhereIf(pq.TagId > 0, p => p.Tags.Any(x => x.Id == pq.TagId))
+                .WhereIf(!string.IsNullOrWhiteSpace(pq.TagSlug), p => p.Tags.Any(x => x.UrlSlug == pq.TagSlug))
                 .ToListAsync(cancellationToken);
+
         }
 
         // 1.r. Đếm số lượng bài viết thỏa mãn điều kiện tìm kiếm được cho trong đối tượng PostQuery.

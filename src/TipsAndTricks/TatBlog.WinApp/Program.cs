@@ -52,31 +52,7 @@ var posts = context.Posts
     })
     .ToList();
 
-foreach (var post in posts)
-{
-    Console.WriteLine("ID       :{0}", post.Id);
-    Console.WriteLine("Title    :{0}", post.Title);
-    Console.WriteLine("View     :{0}", post.ViewCount);
-    Console.WriteLine("Date     :{0}:MM/dd/yyyy", post.PostedDate);
-    Console.WriteLine("Author   :{0}", post.Author);
-    Console.WriteLine("Category :{0}", post.Category);
-    Console.WriteLine("Tags :{0}", post.Tags.Count);
-    Console.WriteLine("".PadRight(80, '-'));
-}
 
-
-
-
-
-var nmonth = await blogRepo.CountPostsNMonthAsync(3);
-
-foreach (var post in nmonth)
-{
-    Console.WriteLine("Year       :{0}", post.Year);
-    Console.WriteLine("Month    :{0}", post.Month);
-    Console.WriteLine("Count     :{0}", post.PostCount);
-    Console.WriteLine("".PadRight(80, '-'));
-}
 // 1.a. Tìm một thẻ (Tag) theo tên định danh (slug).
 async void Cau1a()
 {
@@ -241,7 +217,7 @@ async void Cau1q()
 {
     PostQuery pq = new PostQuery()
     {
-        AuthorId = 3
+        CategorySlug = "aspnet"
     };
     var posts = await blogRepo.FindAllPostsByPostQueryAsync(pq);
 
@@ -251,8 +227,8 @@ async void Cau1q()
         Console.WriteLine("Title    :{0}", post.Title);
         Console.WriteLine("View     :{0}", post.ViewCount);
         Console.WriteLine("Date     :{0}:MM/dd/yyyy", post.PostedDate);
-        Console.WriteLine("Author   :{0}", post.Author);
-        Console.WriteLine("Category :{0}", post.Category);
+        Console.WriteLine("Author   :{0}", post.Author.FullName);
+        Console.WriteLine("Category :{0}", post.Category.Name);
         //Console.WriteLine("Tags :{0}", post.Tags.Count);
         Console.WriteLine("".PadRight(80, '-'));
     }
@@ -264,7 +240,7 @@ async void Cau1r()
 {
     PostQuery pq = new PostQuery()
     {
-        AuthorId = 3
+        CategoryId = 2
     };
     int count = await blogRepo.CountPostsByPostQueryAsync(pq);
     Console.WriteLine("Count post: ", count);
