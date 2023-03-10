@@ -21,6 +21,11 @@ namespace TatBlog.Data.Contexts
 
         public DbSet<Subscriber> Subscribers { get; set; }
 
+        public BlogDbContext() { }
+
+        public BlogDbContext(DbContextOptions<BlogDbContext> options) : base(options)
+        { }
+
         protected override void OnConfiguring(
             DbContextOptionsBuilder optionsBuilder)
         {

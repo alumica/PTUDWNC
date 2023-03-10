@@ -80,7 +80,7 @@ namespace TatBlog.Services.Authors
                 Console.WriteLine("Error: Exsited Slug");
             else
 
-                if (author.Id > 0) // true: update || false: add
+                if (author.Id > 0) 
                 await _context.Set<Author>()
                 .Where(a => a.Id == author.Id)
                 .ExecuteUpdateAsync(a => a
@@ -111,11 +111,25 @@ namespace TatBlog.Services.Authors
 
         // 2.f. Tìm danh sách N tác giả có nhiều bài viết nhất.
         // N là tham số đầu vào.
-        public Task FindListAuthorsMostPostAsync(
+        public async Task<IList<AuthorItem>> FindListAuthorsMostPostAsync(
             int n,
             CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            return await _context.Set<Author>()
+            .Select(x => new AuthorItem()
+            {
+                Id = x.Id,
+                FullName = x.FullName,
+                UrlSlug = x.UrlSlug,
+                ImageUrl = x.ImageUrl,
+                JoinedDate = x.JoinedDate,
+                Email = x.Email,
+                Notes = x.Notes,
+                PostCount = x.Posts.Count(p => p.Published)
+            })
+            .OrderByDescending(x => x.PostCount)
+            .Take(n)
+            .ToListAsync(cancellationToken);
         }
     }
 }

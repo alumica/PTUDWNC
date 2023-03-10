@@ -44,7 +44,7 @@ namespace TatBlog.Services.Authors
 
         // 2.f. Tìm danh sách N tác giả có nhiều bài viết nhất.
         // N là tham số đầu vào.
-        Task FindListAuthorsMostPostAsync(
+        Task<IList<AuthorItem>> FindListAuthorsMostPostAsync(
             int n,
             CancellationToken cancellationToken = default);
     }

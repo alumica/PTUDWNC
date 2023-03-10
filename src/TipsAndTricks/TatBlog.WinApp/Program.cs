@@ -243,7 +243,7 @@ async void Cau1q()
     {
         AuthorId = 3
     };
-    var posts = await blogRepo.FindAllPostsWithPostQueryAsync(pq);
+    var posts = await blogRepo.FindAllPostsByPostQueryAsync(pq);
 
     foreach (var post in posts)
     {
@@ -266,7 +266,7 @@ async void Cau1r()
     {
         AuthorId = 3
     };
-    int count = await blogRepo.CountPostsWithPostQueryAsync(pq);
+    int count = await blogRepo.CountPostsByPostQueryAsync(pq);
     Console.WriteLine("Count post: ", count);
 }
 
@@ -280,4 +280,21 @@ async void Cau2b()
     Author author = await authorRepo.FindAuthorByIdAsync(id);
     Console.WriteLine();
 }
+
+async void Cau2f()
+{
+    int n = 3;
+    var list = await authorRepo.FindListAuthorsMostPostAsync(n);
+    foreach (var item in list)
+    {
+        Console.WriteLine("ID       :{0}", item.Id);
+        Console.WriteLine("Name    :{0}", item.FullName);
+        Console.WriteLine("PostCount   :{0}", item.PostCount);
+        Console.WriteLine("".PadRight(80, '-'));
+    }
+}
+
+Cau1c();
+
+Cau2f();
 Console.ReadLine();

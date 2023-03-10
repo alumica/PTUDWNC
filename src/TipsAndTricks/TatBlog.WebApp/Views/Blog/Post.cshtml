@@ -1,0 +1,23 @@
+﻿@model IPagedList<Post>
+
+@{
+	var postQuery = (ViewBag.PostQuery as PostQuery) ?? new PostQuery();
+
+	ViewData["PageTitle"] = "Bài viết - ";	
+}
+
+<div class="p-4">
+	@if (!string.IsNullOrWhiteSpace(postQuery.Keyword))
+	{
+		<h3 class="text-primary mb-3">
+			Những bài viết chứa từ khóa '@postQuery.Keyword'
+		</h3>
+	}
+
+	@foreach (var postitem in Model)
+	{
+		<partial name="_postlist" model="postitem"></partial>
+	}
+	<partial name="_pager" model="@Model"></partial>
+</div>
+

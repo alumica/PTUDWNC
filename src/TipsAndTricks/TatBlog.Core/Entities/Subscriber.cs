@@ -9,8 +9,6 @@ namespace TatBlog.Core.Entities
     public class Subscriber
     {
         public int Id { get; set; }
-
-        // public string FullName { get; set; }
     
         public string Email { get; set; }
 
@@ -20,7 +18,7 @@ namespace TatBlog.Core.Entities
 
         public string ResonUnsubscribe { get; set; }
 
-        public byte Flag { get; set; }
+        public bool TypeReason { get; set; }
 
         public string Notes { get; set; }
     }

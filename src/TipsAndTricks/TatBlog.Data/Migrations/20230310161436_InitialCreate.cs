@@ -55,7 +55,7 @@ namespace TatBlog.Data.Migrations
                     SubscribeDate = table.Column<DateTime>(type: "datetime", nullable: false),
                     UnsubscribeDate = table.Column<DateTime>(type: "datetime", nullable: false),
                     ResonUnsubscribe = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    Flag = table.Column<byte>(type: "tinyint", nullable: false),
+                    TypeReason = table.Column<bool>(type: "bit", nullable: false),
                     Notes = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true)
                 },
                 constraints: table =>

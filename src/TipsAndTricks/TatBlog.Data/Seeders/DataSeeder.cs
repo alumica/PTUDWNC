@@ -122,6 +122,15 @@ namespace TatBlog.Data.Seeders
                     JoinedDate = new DateTime(2020, 04, 19),
                     ImageUrl = "",
                     Notes = ""
+                },
+                new()
+                {
+                    FullName = "Paul Andrew",
+                    UrlSlug = "paul-andrew",
+                    Email = "paulandrew99@motip.com",
+                    JoinedDate = new DateTime(2021, 04, 19),
+                    ImageUrl = "",
+                    Notes = ""
                 }
             };
 
@@ -146,6 +155,10 @@ namespace TatBlog.Data.Seeders
                 new() { Name ="Architecture", Description="Architecture", UrlSlug="architecture", ShowOnMenu=true},
                 new() { Name ="Messaging", Description="Messaging", UrlSlug="messaging", ShowOnMenu=true},
                 new() { Name ="OOP", Description="Object-Oriented Program", UrlSlug="oop", ShowOnMenu=true},
+                new() { Name ="JAVA", Description="JAVA", UrlSlug="java", ShowOnMenu=true},
+                new() { Name ="Design", Description="Design", UrlSlug="design", ShowOnMenu=true},
+                new() { Name ="Technology", Description="Technology", UrlSlug="technology", ShowOnMenu=true},
+                new() { Name ="AI", Description="Artificial Intelligence", UrlSlug="artificial-intelligence", ShowOnMenu=true},
             };
 
             foreach (var category in categories)
@@ -169,7 +182,11 @@ namespace TatBlog.Data.Seeders
                 new() {Name ="Deep Learning", Description="Deep Learning", UrlSlug ="deep-learning"},
                 new() {Name ="Neural Network", Description="Neural Network", UrlSlug ="neural-network"},
                 new() {Name =".NET", Description=".NET", UrlSlug ="dotnet"},
-                new() {Name ="Web apps", Description="Web apps", UrlSlug ="web-apps"}
+                new() {Name ="Web apps", Description="Web apps", UrlSlug ="web-apps"},
+                new() {Name ="Desktop apps", Description="Desktop apps", UrlSlug ="desktop-apps"},
+                new() {Name ="Front End", Description="Front End", UrlSlug ="front-end"},
+                new() {Name ="Back End", Description="Back End", UrlSlug ="back-end"},
+                new() {Name ="Fullstack", Description="Fullstack", UrlSlug ="fullstack"},
             };
 
 
@@ -190,15 +207,15 @@ namespace TatBlog.Data.Seeders
             IList<Tag> tags)
         {
             var posts = new List<Post>()
-            {
+            { 
                 new()
                 {
                     Title = "Part 3, add a view to an ASP.NET Core MVC app",
                     ShortDescription = "Add a view",
                     Description = "In this section, you modify the HelloWorldController class to use Razor view files. This cleanly encapsulates the process of generating HTML responses to a client.",
                     Meta = "",
-                    UrlSlug = "adding-controller",
-                    ImageUrl = "",
+                    UrlSlug = "adding-view",
+                    ImageUrl = "images/post__adding-view.png",
                     Published = true,
                     PostedDate = new DateTime(2023, 03, 03, 10, 20, 0),
                     ModifiedDate = null,

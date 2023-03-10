@@ -30,7 +30,7 @@ namespace TatBlog.Data.Mappings
             builder.Property(a => a.ResonUnsubscribe)
                 .HasMaxLength(500);
 
-            builder.Property(a => a.Flag);
+            builder.Property(a => a.TypeReason);
 
             builder.Property(a => a.Notes)
                 .HasMaxLength(500);

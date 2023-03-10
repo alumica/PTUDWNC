@@ -19,13 +19,14 @@ namespace TatBlog.Services.Subscribers
             _context = context;
         }
 
-        public async Task SubscribeAsync(
+        public async Task<Subscriber> SubscribeAsync(
             string email,
             CancellationToken cancellationToken = default)
         {
+            Subscriber s = null;
             if (!string.IsNullOrWhiteSpace(email) && !IsExistedEmail(email).Result)
             {
-                Subscriber s = new Subscriber()
+                s = new Subscriber()
                 {
                     Email = email,
                     SubscribeDate = DateTime.Now,
@@ -33,14 +34,13 @@ namespace TatBlog.Services.Subscribers
                 _context.Subscribers.Add(s);
                 _context.SaveChanges();
             }
-            else
-                Console.WriteLine("Error: Email existed");
+            return s;
         }
 
         public async Task UnsubscribeAsync(
             string email,
             string reason, 
-            byte flag, 
+            bool typeReason, 
             CancellationToken cancellationToken = default)
         {
             if (!string.IsNullOrWhiteSpace(email) && IsExistedEmail(email).Result)
@@ -49,7 +49,7 @@ namespace TatBlog.Services.Subscribers
                 .Where(s => s.Email.Equals(email))
                 .ExecuteUpdateAsync(p => p
                     .SetProperty(x => x.ResonUnsubscribe, x => reason)
-                    .SetProperty(x => x.Flag, x => flag),
+                    .SetProperty(x => x.TypeReason, x => typeReason),
                     cancellationToken);
             }
 
@@ -67,7 +67,7 @@ namespace TatBlog.Services.Subscribers
                 .Where(s => s.Id == id)
                 .ExecuteUpdateAsync(p => p
                     .SetProperty(x => x.ResonUnsubscribe, x => reason)
-                    .SetProperty(x => x.Flag, x => 1)
+                    .SetProperty(x => x.TypeReason, x => false)
                     .SetProperty(x => x.Notes, x => notes),
                     cancellationToken);
             }

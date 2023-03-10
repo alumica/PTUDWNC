@@ -12,7 +12,7 @@ using TatBlog.Data.Contexts;
 namespace TatBlog.Data.Migrations
 {
     [DbContext(typeof(BlogDbContext))]
-    [Migration("20230305172233_InitialCreate")]
+    [Migration("20230310161436_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -190,9 +190,6 @@ namespace TatBlog.Data.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<byte>("Flag")
-                        .HasColumnType("tinyint");
-
                     b.Property<string>("Notes")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
@@ -203,6 +200,9 @@ namespace TatBlog.Data.Migrations
 
                     b.Property<DateTime>("SubscribeDate")
                         .HasColumnType("datetime");
+
+                    b.Property<bool>("TypeReason")
+                        .HasColumnType("bit");
 
                     b.Property<DateTime>("UnsubscribeDate")
                         .HasColumnType("datetime");
