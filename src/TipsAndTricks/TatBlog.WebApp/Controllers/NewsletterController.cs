@@ -11,11 +11,16 @@ namespace TatBlog.WebApp.Controllers
         {
             _subcriberRepository = subcriberRepository;
         }
+
+        [HttpPost]
         public async Task<IActionResult> Subscribe(
             string email)
         {
-            var subscribe = _subcriberRepository.SubscribeAsync(email);
+            var subscribe = await _subcriberRepository.SubscribeAsync(email);
+            if (subscribe != null)
+            {
 
+            }
             return View(subscribe);
         }
 

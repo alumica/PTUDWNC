@@ -17,7 +17,7 @@ namespace TatBlog.Services.Subscribers
 
         // e.Định nghĩa các phương thức để thực hiện các công việc sau:
         // Đăng ký theo dõi: SubscribeAsync(email)
-        Task<Subscriber> SubscribeAsync(
+        Task<bool> SubscribeAsync(
             string email,
             CancellationToken cancellationToken = default);
 

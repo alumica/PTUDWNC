@@ -466,7 +466,7 @@ namespace TatBlog.Services.Blogs
                 .Include(t => t.Tags)
                 .Include(a => a.Author);
 
-            IQueryable<Post> postQuery = posts
+            IQueryable < Post> postQuery = posts
                 .WhereIf(pq.AuthorId > 0, p => p.AuthorId == pq.AuthorId)
                 .WhereIf(!string.IsNullOrWhiteSpace(pq.AuthorSlug), p => p.Author.UrlSlug == pq.AuthorSlug)
                 .WhereIf(pq.PostId > 0, p => p.Id == pq.PostId)
@@ -478,7 +478,12 @@ namespace TatBlog.Services.Blogs
                 .WhereIf(pq.PostedDay > 0, p => p.PostedDate.Day == pq.PostedDay)
                 .WhereIf(pq.TagId > 0, p => p.Tags.Any(x => x.Id == pq.TagId))
                 .WhereIf(!string.IsNullOrWhiteSpace(pq.TagSlug), p => p.Tags.Any(x => x.UrlSlug == pq.TagSlug))
-                .WhereIf(pq.PublishedOnly, p => p.Published == pq.PublishedOnly);
+                .WhereIf(pq.PublishedOnly, p => p.Published == pq.PublishedOnly)
+                .WhereIf(!string.IsNullOrWhiteSpace(pq.Keyword), p => p.Title.Contains(pq.Keyword) || 
+                    p.ShortDescription.Contains(pq.Keyword) ||
+                    p.Description.Contains(pq.Keyword) ||
+                    p.Category.Name.Contains(pq.Keyword) ||
+                    p.Tags.Any(t => t.Name.Contains(pq.Keyword)));
 
             return postQuery;
         }

@@ -31,6 +31,8 @@ namespace TatBlog.WebApp.Extensions
             builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
             builder.Services.AddScoped<ISubscriberRepository, SubscriberRepository>();
             builder.Services.AddScoped<IDataSeeder, DataSeeder>();
+            builder.Services.AddTransient<BlogDbContext>();
+
 
             return builder;
         }

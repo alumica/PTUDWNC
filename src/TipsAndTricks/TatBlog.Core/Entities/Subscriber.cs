@@ -14,12 +14,12 @@ namespace TatBlog.Core.Entities
 
         public DateTime SubscribeDate { get; set; }
 
-        public DateTime UnsubscribeDate { get; set; }
+        public DateTime? UnsubscribeDate { get; set; }
 
-        public string ResonUnsubscribe { get; set; }
+        public string? ResonUnsubscribe { get; set; }
 
-        public bool TypeReason { get; set; }
+        public bool? TypeReason { get; set; } // true: user unsubscribe | false: block
 
-        public string Notes { get; set; }
+        public string? Notes { get; set; }
     }
 }

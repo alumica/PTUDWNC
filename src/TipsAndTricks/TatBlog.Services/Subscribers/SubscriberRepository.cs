@@ -19,7 +19,7 @@ namespace TatBlog.Services.Subscribers
             _context = context;
         }
 
-        public async Task<Subscriber> SubscribeAsync(
+        public async Task<bool> SubscribeAsync(
             string email,
             CancellationToken cancellationToken = default)
         {
@@ -30,11 +30,12 @@ namespace TatBlog.Services.Subscribers
                 {
                     Email = email,
                     SubscribeDate = DateTime.Now,
+
                 };
                 _context.Subscribers.Add(s);
-                _context.SaveChanges();
+                return await _context.SaveChangesAsync(cancellationToken) > 0;
             }
-            return s;
+            return false;
         }
 
         public async Task UnsubscribeAsync(
@@ -45,7 +46,7 @@ namespace TatBlog.Services.Subscribers
         {
             if (!string.IsNullOrWhiteSpace(email) && IsExistedEmail(email).Result)
             {
-                await _context.Set<Subscriber>()
+               await _context.Set<Subscriber>()
                 .Where(s => s.Email.Equals(email))
                 .ExecuteUpdateAsync(p => p
                     .SetProperty(x => x.ResonUnsubscribe, x => reason)

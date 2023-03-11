@@ -1,10 +1,10 @@
 ﻿<div class="mb-4">
-	<form class="form-inline" method="get"
+	<form class="form-inline" method="POST"
         asp-controller="Newsletter" 
         asp-action="Subscribe" 
-                asp-route-email="inlineFormEmail.value">
+                    >
         <div class="input-group  mb-3">
-            <input type="email" class="form-control" id="inlineFormEmail" placeholder="Email">
+            <input type="email" class="form-control" id="email" name="email" placeholder="Email">
             <button type="submit" class="btn btn-primary">Đăng ký</button>
         </div>
     </form>

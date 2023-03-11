@@ -198,10 +198,10 @@ namespace TatBlog.Data.Migrations
                     b.Property<DateTime>("SubscribeDate")
                         .HasColumnType("datetime");
 
-                    b.Property<bool>("TypeReason")
+                    b.Property<bool?>("TypeReason")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime>("UnsubscribeDate")
+                    b.Property<DateTime?>("UnsubscribeDate")
                         .HasColumnType("datetime");
 
                     b.HasKey("Id");

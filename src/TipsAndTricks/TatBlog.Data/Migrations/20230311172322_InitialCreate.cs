@@ -53,9 +53,9 @@ namespace TatBlog.Data.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Email = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     SubscribeDate = table.Column<DateTime>(type: "datetime", nullable: false),
-                    UnsubscribeDate = table.Column<DateTime>(type: "datetime", nullable: false),
+                    UnsubscribeDate = table.Column<DateTime>(type: "datetime", nullable: true),
                     ResonUnsubscribe = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    TypeReason = table.Column<bool>(type: "bit", nullable: false),
+                    TypeReason = table.Column<bool>(type: "bit", nullable: true),
                     Notes = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true)
                 },
                 constraints: table =>
