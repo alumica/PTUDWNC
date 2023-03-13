@@ -1,0 +1,30 @@
+﻿<div class="my-4">
+	<!-- Form tìm kiếm -->
+	<partial name="_SearchForm"></partial>
+
+	<!-- Các chuyên mục/chủ đề -->
+	@await Component.InvokeAsync("CategoriesWidget")
+
+	<!-- Top bài viết nổi bật-->
+	@await Component.InvokeAsync("FeaturedPostsWidget")
+
+	<!-- Ngẫu nhiên 5 bài viết-->
+	@await Component.InvokeAsync("RandomPostsWidget")
+
+	<!-- Đăng ký nhận tin mới -->
+	<h3 class="text-success mb-2">
+		Đăng ký nhận tin mới
+	</h3>
+	<partial name="_NewsletterForm" />
+
+	<!-- Tag cloud -->
+	<h1>
+		@await Component.InvokeAsync("TagCloudWidget")
+	</h1>
+
+	<!-- Archives -->
+	@await Component.InvokeAsync("ArchivesWidget")
+
+	<!-- Top Author -->
+	@await Component.InvokeAsync("BestAuthorsWidget")
+</div>

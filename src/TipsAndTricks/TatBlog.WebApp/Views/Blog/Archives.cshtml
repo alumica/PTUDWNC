@@ -1,0 +1,17 @@
+﻿@model IPagedList<Post>
+
+@{
+	var postQuery = (ViewBag.PostQuery as PostQuery) ?? new PostQuery();
+
+	ViewData["PageTitle"] = "Bài viết - ";	
+}
+
+<div class="p-4">
+
+	@foreach (var postitem in Model)
+	{
+		<partial name="_postlist" model="postitem"></partial>
+	}
+	<partial name="_pager" model="@Model"></partial>
+</div>
+

@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TatBlog.Core.Contracts;
 
 namespace TatBlog.WinApp
 {
-    public class PagingParams
+    public class PagingParams : IPagingParams
     {
         public int PageSize { get; set; } = 10;
 
