@@ -31,7 +31,9 @@ namespace TatBlog.Services.Blogs
         {
             IQueryable<Post> postsQuery = _context.Set<Post>()
                 .Include(x => x.Category)
-                .Include(x => x.Author);
+                .Include(x => x.Author)
+                .Include(x => x.Tags)
+                .Include(x => x.Comments);
 
             if (year > 0)
             {
@@ -464,7 +466,8 @@ namespace TatBlog.Services.Blogs
             var posts = _context.Set<Post>()
                 .Include(c => c.Category)
                 .Include(t => t.Tags)
-                .Include(a => a.Author);
+                .Include(a => a.Author)
+                .Include(m => m.Comments);
 
             IQueryable < Post> postQuery = posts
                 .WhereIf(pq.AuthorId > 0, p => p.AuthorId == pq.AuthorId)

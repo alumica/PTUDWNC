@@ -103,29 +103,17 @@ namespace TatBlog.WebApp.Controllers
         }
 
         public async Task<IActionResult> Post(
-            int year, int month, int day, string slug = null,
-            string keyword = null,
-            int pageNumber = 1,
-            int pageSize = 5)
+            int year, int month, string slug = null)
         {
             // Tạo đối tượng chứa các điều kiện truy vấn
-            var postQuery = new PostQuery()
-            {
-                PublishedOnly = true,
-                Keyword = keyword,
-                PostSlug = slug,
-                PostedYear = year,
-                PostedMonth = month,
-                PostedDay = day,
-            };
 
-            var postList = await _blogRepository
-                .GetPagedPostQueryAsync(postQuery, pageNumber, pageSize);
-            await _blogRepository.IncreaseViewCountAsync(postList[0].Id);
+            var post = await _blogRepository
+                .GetPostAsync(year, month, slug);
+            await _blogRepository.IncreaseViewCountAsync(post.Id);
 
-            ViewBag.PostQuery = postQuery;
+            //ViewBag.PostQuery = postQuery;
 
-            return View(postList);
+            return View(post);
         }
 
         public async Task<IActionResult> Archives(
