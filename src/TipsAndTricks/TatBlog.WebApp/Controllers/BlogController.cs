@@ -36,6 +36,7 @@ namespace TatBlog.WebApp.Controllers
             return View(postList);
         }
 
+<<<<<<< HEAD
         public async Task<IActionResult> Category(
             string slug = null,
             string keyword = null,
@@ -139,6 +140,8 @@ namespace TatBlog.WebApp.Controllers
             return View(postList);
         }
 
+=======
+>>>>>>> 0929e9449dc10bd4b1de4b9a54d73aef7b71d34e
         public IActionResult About()
             => View();
 

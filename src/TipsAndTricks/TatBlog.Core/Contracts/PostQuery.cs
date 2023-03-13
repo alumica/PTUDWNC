@@ -10,7 +10,7 @@ namespace TatBlog.Core.DTO
     {
         public int AuthorId { get; set; }
 
-        public string AuthorSlug { get; set; } = default;
+        public string AuthorSlug { get; set; }
 
         public int PostId { get; set; }
 
@@ -26,12 +26,10 @@ namespace TatBlog.Core.DTO
 
         public int TagId { get; set; }
 
-        public string TagSlug { get; set; } = default;
+        public string TagSlug { get; set; }
 
         public bool PublishedOnly { get; set; }
 
-        public string Keyword { get; set; } = default;
-
-        public string PostSlug { get; set; }
+        public string Keyword { get; set; }
     }
 }
