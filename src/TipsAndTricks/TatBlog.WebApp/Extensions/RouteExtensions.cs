@@ -13,7 +13,12 @@
                 pattern: "newsletter/subscribe/{email}",
                 defaults: new { controller = "Newsletter", action = "Subscribe" });
 
-            endpoints.MapControllerRoute(
+			endpoints.MapControllerRoute(
+				name: "archives",
+				pattern: "blog/archives/{year}/{month}",
+				defaults: new { controller = "Blog", action = "Archives" });
+
+			endpoints.MapControllerRoute(
                 name: "posts-by-category",
                 pattern: "blog/category/{slug}",
                 defaults: new { controller = "Blog", action = "Category" });
@@ -29,9 +34,14 @@
                 defaults: new { controller = "Blog", action = "Tag" });
 
             endpoints.MapControllerRoute(
-                name: "posts-by-post",
+                name: "single-post",
                 pattern: "blog/post/{year:int}/{month:int}/{day:int}/{slug}",
                 defaults: new { controller = "Blog", action = "Post" });
+
+            endpoints.MapControllerRoute(
+				name: "admin-area",
+				pattern: "admin/{controller=Dashboard}/{action=Index}/{id?}",
+				defaults: new { area = "Admin" });
 
             endpoints.MapControllerRoute(
                 name: "default",

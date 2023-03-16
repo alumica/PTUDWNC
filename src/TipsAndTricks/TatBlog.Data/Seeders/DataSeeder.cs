@@ -176,7 +176,7 @@ namespace TatBlog.Data.Seeders
         {
             var tags = new List<Tag>()
             {
-                new() {Name ="Google", Description="Google Application", UrlSlug ="google-application"},
+                new() {Name ="Google", Description="Google", UrlSlug ="google-application"},
                 new() {Name ="ASP.NET MVC", Description="ASP.NET MVC", UrlSlug ="aspdotnet-mvc"},
                 new() {Name ="Razor Page", Description="Razor Page", UrlSlug ="razor-page"},
                 new() {Name ="Deep Learning", Description="Deep Learning", UrlSlug ="deep-learning"},

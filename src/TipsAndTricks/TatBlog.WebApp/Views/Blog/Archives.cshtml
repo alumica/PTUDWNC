@@ -2,8 +2,7 @@
 
 @{
 	var postQuery = (ViewBag.PostQuery as PostQuery) ?? new PostQuery();
-
-	ViewData["PageTitle"] = "Bài viết - ";	
+	ViewData["PageTitle"] = "Kho lưu trữ - " + postQuery.PostedMonth + "/" + postQuery.PostedYear;	
 }
 
 <div class="p-4">

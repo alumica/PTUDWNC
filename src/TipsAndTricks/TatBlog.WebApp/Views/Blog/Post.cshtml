@@ -3,7 +3,7 @@
 @{
 	var postQuery = (ViewBag.PostQuery as PostQuery) ?? new PostQuery();
 
-	ViewData["PageTitle"] = "Bài viết - ";	
+	ViewData["PageTitle"] = "Bài viết - " + Model.Title;	
 }
 
 <div class="p-4">

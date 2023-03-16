@@ -9,11 +9,12 @@
 		@foreach (var item in Model)
 		{
 			<li class="list-group-item">
-				<a asp-controller="Blog"
+				<a asp-area="" asp-controller="Blog"
 					asp-action="Archives"
 					asp-route-year="@item.Year"
 					asp-route-month="@item.Month"
-					title="@item.Year">
+		  title="@DateTime.ParseExact(@item.Year + "-" + (@item.Month.ToString()).PadLeft(2, '0')+"-01", "yyyy-MM-dd",
+                                       System.Globalization.CultureInfo.InvariantCulture).ToString("MMMM") @item.Year">
 					@DateTime.ParseExact(@item.Year + "-" + (@item.Month.ToString()).PadLeft(2, '0')+"-01", "yyyy-MM-dd",
                                        System.Globalization.CultureInfo.InvariantCulture).ToString("MMMM") @item.Year
 					<span>(@item.PostCount)</span>

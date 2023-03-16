@@ -2,8 +2,8 @@
 
 @{
 	var postQuery = (ViewBag.PostQuery as PostQuery) ?? new PostQuery();
-
-	ViewData["PageTitle"] = "Tác giả - ";	
+	string nameAuthor = Model.Count > 0 ? Model[0].Author.FullName : "";
+	ViewData["PageTitle"] = "Tác giả - " + nameAuthor;
 }
 
 <div class="p-4">

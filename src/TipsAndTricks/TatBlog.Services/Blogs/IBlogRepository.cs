@@ -19,6 +19,12 @@ namespace TatBlog.Services.Blogs
             string slug,
             CancellationToken cancellationToken = default);
 
+        // Tìm bài viết có mã số là 'id'
+        Task<Post> GetPostByIdAsync(
+            int id,
+            bool includeDetails = false,
+            CancellationToken cancellationToken = default);
+
         // Tìm Top N bài viết phổ biến được nhiều người xem nhất
         Task<IList<Post>> GetPopularArticlesAsync(
             int numPosts,
@@ -117,10 +123,15 @@ namespace TatBlog.Services.Blogs
         // 1.m. Thêm hay cập nhật một bài viết.
         Task AddOrUpdatePostAsync(
             Post post,
+            List<string> tags = null,
             CancellationToken cancellationToken = default);
 
-        // 1.n. Chuyển đổi trạng thái Published của bài viết. 
-        Task<bool> SwitchPublisedAsync(
+        Task<Post> CreateOrUpdatePostAsync(
+        Post post, IEnumerable<string> tags,
+        CancellationToken cancellationToken = default);
+
+		// 1.n. Chuyển đổi trạng thái Published của bài viết. 
+		Task<bool> SwitchPublisedAsync(
             int id,
             CancellationToken cancellationToken = default);
 

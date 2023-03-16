@@ -17,8 +17,11 @@
 			<div class="col-md-8">
 				<div class="card-body">
 					<a asp-controller="Blog"
-								asp-action="Post"
-								asp-route-slug="@Model.UrlSlug">
+						asp-action="Post"
+					   asp-route-year="@Model.PostedDate.Year"
+					   asp-route-month="@Model.PostedDate.Month"
+					   asp-route-day="@Model.PostedDate.Day"
+					   asp-route-slug="@Model.UrlSlug">
 						<h5 class="card-title">
 							@Model.Title
 						</h5>

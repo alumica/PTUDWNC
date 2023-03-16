@@ -21,12 +21,35 @@ namespace TatBlog.Services.Authors
             _context = context;
         }
 
-        // 2. Tạo các lớp và định nghĩa các phương thức
-        // cần thiết để truy vấn và cập nhật thông tin tác giả bài viết.
-        // 2.a. Tạo interface IAuthorRepository và lớp AuthorRepository.
+		// Lấy danh sách tác giả và số lượng bài viết
+		// nằm thuộc từng tác giả
+		public async Task<IList<AuthorItem>> GetAuthorsAsync(
+			CancellationToken cancellationToken = default)
+        {
+			IQueryable<Author> authors = _context.Set<Author>();
 
-        // 2.b. Tìm một tác giả theo mã số.
-        public async Task<Author> FindAuthorByIdAsync(
+
+            return await authors
+                .OrderBy(x => x.FullName)
+                .Select(x => new AuthorItem()
+                {
+                    Id = x.Id,
+                    FullName = x.FullName,
+                    UrlSlug = x.UrlSlug,
+                    ImageUrl = x.ImageUrl,
+                    JoinedDate = x.JoinedDate,
+                    Email = x.Email,
+                    Notes = x.Notes,
+                    PostCount = x.Posts.Count(p => p.Published)
+                }).ToListAsync(cancellationToken);
+		}
+
+		// 2. Tạo các lớp và định nghĩa các phương thức
+		// cần thiết để truy vấn và cập nhật thông tin tác giả bài viết.
+		// 2.a. Tạo interface IAuthorRepository và lớp AuthorRepository.
+
+		// 2.b. Tìm một tác giả theo mã số.
+		public async Task<Author> FindAuthorByIdAsync(
             int id,
             CancellationToken cancellationToken = default)
         {

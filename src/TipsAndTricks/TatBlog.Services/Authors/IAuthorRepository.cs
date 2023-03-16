@@ -11,12 +11,18 @@ namespace TatBlog.Services.Authors
 {
     public interface IAuthorRepository
     {
-        // 2. Tạo các lớp và định nghĩa các phương thức
-        // cần thiết để truy vấn và cập nhật thông tin tác giả bài viết.
-        // 2.a. Tạo interface IAuthorRepository và lớp AuthorRepository.
+		// Lấy danh sách tác giả và số lượng bài viết
+		// nằm thuộc từng tác giả
+		Task<IList<AuthorItem>> GetAuthorsAsync(
+			CancellationToken cancellationToken = default);
 
-        // 2.b. Tìm một tác giả theo mã số.
-        Task<Author> FindAuthorByIdAsync(
+
+		// 2. Tạo các lớp và định nghĩa các phương thức
+		// cần thiết để truy vấn và cập nhật thông tin tác giả bài viết.
+		// 2.a. Tạo interface IAuthorRepository và lớp AuthorRepository.
+
+		// 2.b. Tìm một tác giả theo mã số.
+		Task<Author> FindAuthorByIdAsync(
             int id,
             CancellationToken cancellationToken = default);
 

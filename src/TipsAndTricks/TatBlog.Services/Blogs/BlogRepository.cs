@@ -53,6 +53,25 @@ namespace TatBlog.Services.Blogs
             return await postsQuery.FirstOrDefaultAsync(cancellationToken);
         }
 
+        // Tìm bài viết có mã số là 'id'
+        public async Task<Post> GetPostByIdAsync(
+            int id,
+            bool includeDetails = false,
+            CancellationToken cancellationToken = default)
+        {
+            if (!includeDetails)
+            {
+                return await _context.Set<Post>().FindAsync(id);
+            }
+            return await _context.Set<Post>()
+                .Include(p => p.Author)
+				.Include(p => p.Category)
+				.Include(p => p.Tags)
+				.Include(p => p.Comments)
+				.Where(p => p.Id == id)
+                .FirstOrDefaultAsync(cancellationToken);
+        }
+
         // Tìm Top N bài viết phổ biến được nhiều người xem nhất
         public async Task<IList<Post>> GetPopularArticlesAsync(
             int numPosts,
@@ -115,9 +134,9 @@ namespace TatBlog.Services.Blogs
                 }).ToListAsync(cancellationToken);
         }
 
-        // Lấy danh sách từ khóa/thẻ và phân trang theo
-        // các tham số pagingParams
-        public async Task<IPagedList<TagItem>> GetPagedTagsAsync(
+		// Lấy danh sách từ khóa/thẻ và phân trang theo
+		// các tham số pagingParams
+		public async Task<IPagedList<TagItem>> GetPagedTagsAsync(
             IPagingParams pagingParams,
             CancellationToken cancellationToken = default)
         {
@@ -142,15 +161,9 @@ namespace TatBlog.Services.Blogs
             string slug,
             CancellationToken cancellationToken = default)
         {
-            IQueryable<Tag> tagsQuery = _context.Set<Tag>();
-            if (!string.IsNullOrWhiteSpace(slug))
-            {
-                tagsQuery = tagsQuery
-                    .Include(x => x.Posts)
-                    .Where(x => x.UrlSlug == slug);
-            }
-            return await tagsQuery.FirstOrDefaultAsync(cancellationToken);
-        }
+			return await _context.Set<Tag>()
+			.FirstOrDefaultAsync(x => x.UrlSlug == slug, cancellationToken);
+		}
 
         // 1.c. Lấy danh sách tất cả các thẻ (Tag) kèm theo
         // số bài viết chứa thẻ đó. Kết quả trả về kiểu IList<TagItem>.
@@ -352,6 +365,7 @@ namespace TatBlog.Services.Blogs
         // 1.m. Thêm hay cập nhật một bài viết.
         public async Task AddOrUpdatePostAsync(
             Post post,
+            List<string> tags = null,
             CancellationToken cancellationToken = default)
         {
             if (IsPostSlugExistedAsync(post.Id, post.UrlSlug).Result)
@@ -386,8 +400,61 @@ namespace TatBlog.Services.Blogs
 
         }
 
-        // 1.n. Chuyển đổi trạng thái Published của bài viết. 
-        public async Task<bool> SwitchPublisedAsync(
+        private string GenerateSlug(string s)
+        {
+            return s.ToLower().Replace(".", "dot").Replace(" ", "-");
+		}
+
+		public async Task<Post> CreateOrUpdatePostAsync(
+		    Post post, IEnumerable<string> tags,
+		    CancellationToken cancellationToken = default)
+		{
+			if (post.Id > 0)
+			{
+				await _context.Entry(post).Collection(x => x.Tags).LoadAsync(cancellationToken);
+			}
+			else
+			{
+				post.Tags = new List<Tag>();
+			}
+
+			var validTags = tags.Where(x => !string.IsNullOrWhiteSpace(x))
+				.Select(x => new
+				{
+					Name = x,
+					Slug = GenerateSlug(x)
+				})
+				.GroupBy(x => x.Slug)
+				.ToDictionary(g => g.Key, g => g.First().Name);
+
+
+			foreach (var kv in validTags)
+			{
+				if (post.Tags.Any(x => string.Compare(x.UrlSlug, kv.Key, StringComparison.InvariantCultureIgnoreCase) == 0)) continue;
+
+				var tag = await FindTagBySlugAsync(kv.Key, cancellationToken) ?? new Tag()
+				{
+					Name = kv.Value,
+					Description = kv.Value,
+					UrlSlug = kv.Key
+				};
+
+				post.Tags.Add(tag);
+			}
+			    post.Tags = post.Tags.Where(t => validTags.ContainsKey(t.UrlSlug)).ToList();
+
+			if (post.Id > 0)
+				_context.Update(post);
+			else
+				_context.Add(post);
+
+			await _context.SaveChangesAsync(cancellationToken);
+
+			return post;
+		}
+
+		// 1.n. Chuyển đổi trạng thái Published của bài viết. 
+		public async Task<bool> SwitchPublisedAsync(
             int id,
             CancellationToken cancellationToken = default)
         {
@@ -469,7 +536,7 @@ namespace TatBlog.Services.Blogs
                 .Include(a => a.Author)
                 .Include(m => m.Comments);
 
-            IQueryable < Post> postQuery = posts
+            IQueryable<Post> postQuery = posts
                 .WhereIf(pq.AuthorId > 0, p => p.AuthorId == pq.AuthorId)
                 .WhereIf(!string.IsNullOrWhiteSpace(pq.AuthorSlug), p => p.Author.UrlSlug == pq.AuthorSlug)
                 .WhereIf(pq.PostId > 0, p => p.Id == pq.PostId)

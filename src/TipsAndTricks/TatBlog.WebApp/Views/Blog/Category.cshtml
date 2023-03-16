@@ -2,8 +2,8 @@
 
 @{
 	var postQuery = (ViewBag.PostQuery as PostQuery) ?? new PostQuery();
-
-	ViewData["PageTitle"] = "Danh mục - ";	
+	string nameCategory = Model.Count > 0 ? Model[0].Category.Name : "";
+	ViewData["PageTitle"] = "Danh mục - " + nameCategory;
 }
 
 <div class="p-4">
