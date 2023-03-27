@@ -1,4 +1,8 @@
 ﻿@model TatBlog.WebApp.Areas.Admin.Models.PostFilterModel
+@{
+    var postList = ViewBag.PostsList as IList<Post>;
+}
+
 
 <form asp-area="Admin"
       asp-controller="Posts"
@@ -49,6 +53,11 @@
     </div>
 
     <div class="col-auto">
+        <label class="" asp-for="NotPublished"></label>
+        <input type="checkbox" asp-for="NotPublished" />
+    </div>
+
+    <div class="col-auto">
         <button type="submit" class="btn btn-primary">Tìm lọc</button>
         <a asp-area="Admin"
            asp-controller="Posts"
@@ -56,5 +65,13 @@
            class="btn btn-success">
             Thêm mới
         </a>
+        <a asp-area="Admin"
+           asp-controller="Posts"
+           asp-action="Index"
+           class="btn btn-warning">
+            Bỏ lọc
+        </a>
     </div>
+
+    
 </form>

@@ -3,6 +3,7 @@ using FluentValidation.AspNetCore;
 using MapsterMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Drawing.Printing;
 using TatBlog.Core.DTO;
 using TatBlog.Core.Entities;
 using TatBlog.Services.Authors;
@@ -39,7 +40,10 @@ namespace TatBlog.WebApp.Areas.Admin.Controllers
 
 		}
 
-		public async Task<IActionResult> Index(PostFilterModel model)
+		public async Task<IActionResult> Index(
+            PostFilterModel model,
+            [FromQuery(Name = "p")] int pageNumber = 1,
+            [FromQuery(Name = "ps")] int pageSize = 5)
 		{
 			_logger.LogInformation("Tạo điều kiện truy vấn");
 			// Sử dụng Mapster để tạo đối tượng PostQuery
@@ -48,7 +52,7 @@ namespace TatBlog.WebApp.Areas.Admin.Controllers
 
 			_logger.LogInformation("Lấy danh sách bài viết từ CSDL");
 			ViewBag.PostsList = await _blogRepository
-				.GetPagedPostQueryAsync(postQuery, 1, 10);
+				.GetPagedPostQueryAsync(postQuery, pageNumber, pageSize);
 
 			_logger.LogInformation("Chuẩn bị dữ liệu trong ViewModel");
 			await PopulatePostFilterModeAsync(model);
@@ -56,7 +60,20 @@ namespace TatBlog.WebApp.Areas.Admin.Controllers
 			return View(model);
 		}
 
-		[HttpGet]
+        public async Task<IActionResult> TogglePublished(int id)
+        {
+            await _blogRepository.SwitchPublisedAsync(id);
+            return RedirectToAction(nameof(Index));
+        }
+
+        public async Task<IActionResult> DeletePost(int id)
+		{
+			await _blogRepository.DeletePostByIdAsync(id);
+			return RedirectToAction(nameof(Index));
+		}
+
+
+        [HttpGet]
 		public async Task<IActionResult> Edit(int id = 0)
 		{
 			// Id = 0 <=> Thêm bài viết mới
@@ -76,6 +93,7 @@ namespace TatBlog.WebApp.Areas.Admin.Controllers
 			return View(model);
 		}
 
+		
 		[HttpPost]
 		public async Task<IActionResult> Edit(
 			PostEditModel model)
@@ -147,6 +165,21 @@ namespace TatBlog.WebApp.Areas.Admin.Controllers
 				? Json($"Slug '{urlSlug}' đã được sử dụng")
 				: Json(true);
 		}
+
+		[HttpPost]
+		public async Task<IActionResult> DeletePost(
+			int id,
+            PostFilterModel model,
+            [FromQuery(Name = "p")] int pageNumber = 1,
+            [FromQuery(Name = "ps")] int pageSize = 5
+            )
+        {
+            var post = id > 0
+                ? await _blogRepository.DeletePostByIdAsync(id)
+                : false;
+
+            return RedirectToAction("Index", "Posts", new { area = "Admin", model = model, pageNumber = pageNumber, pageSize = pageSize});
+        }
 
         private async Task PopulatePostEditModeAsync(PostEditModel model)
         {

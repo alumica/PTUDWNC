@@ -1,5 +1,93 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@*@model TatBlog.WebApp.Areas.Admin.Models.CategoryFilterModel*@
+@model IPagedList<AuthorItem>
 @{
+    ViewData["PageTitle"] = "Danh sách tác giả";
+    var authorsList = Model;
+
+    //var authorsList = ViewBag.AuthorsList as IPagedList<CategoryItem>;
+
+}
+
+<h1>
+    Danh sách tác giả
+</h1>
+
+<!-- Hiển thị Form để tìm bài viết -->
+<partial name="_AuthorFilterPane" />
+
+<style>
+    tr th:nth-last-child(-n+2) {
+        text-align: center;
+    }
+
+    tr td:nth-last-child(-n+2) {
+        text-align: center;
+    }
+</style>
+
+
+@if (authorsList != null && authorsList.Count > 0)
+{
+    <table class="table table-responsive table-striped">
+        <thead>
+            <tr>
+                <th>Họ & tên</th>
+                <th>Email</th>
+                <th>Ngày tham gia</th>
+                <th>Số bài viết</th>
+                <th>Xóa</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var author in authorsList)
+            {
+                <tr>
+                    <td>
+                        <a asp-area="Admin"
+                           asp-controller="Authors"
+                           asp-action="Edit"
+                           asp-route-id="@author.Id"
+                           class="text-bold">
+                            @author.FullName
+                        </a>
+
+                        <p class="text-muted">
+                            @author.Notes
+                        </p>
+                    </td>
+                    <td>
+                        @author.Email
+                    </td>
+                    <td>
+                        @author.JoinedDate
+                    </td>
+                    <td>
+                        @author.PostCount
+                    </td>
+
+
+                    <td>
+                        <a asp-area="Admin"
+                           asp-controller="Authors"
+                           asp-action="DeleteAuthor"
+                           asp-route-id="@author.Id"
+                           class="btn btn-sm btn-danger"
+                           onclick="return confirm('Bạn muốn xóa tác giả này không ?');">
+                            <i class="fa fa-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <script>
+    </script>
+
+    <partial name="_PagerAdmin" model="@authorsList"></partial>
+}
+else
+{
+    <h1 class="text-danger">
+        Không tìm thấy tác giả nào
+    </h1>
 }

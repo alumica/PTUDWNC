@@ -15,24 +15,30 @@ namespace TatBlog.Data.Mappings
         {
             builder.ToTable("Comments");
 
-            builder.HasKey(p => p.Id);
+            builder.HasKey(c => c.Id);
 
-            builder.Property(p => p.FullName)
+            builder.Property(c => c.FullName)
                 .HasMaxLength(200)
                 .IsRequired();
 
-            builder.Property(p => p.Gender);
+            builder.Property(c => c.Gender);
 
-            builder.Property(p => p.Approved)
+            builder.Property(c => c.Approved)
                 .HasDefaultValue(false)
                 .IsRequired();
 
-            builder.Property(p => p.PostedDate)
+            builder.Property(c => c.PostedDate)
                 .HasColumnType("datetime");
 
-            builder.Property(p => p.Description)
+            builder.Property(c => c.Description)
                 .HasMaxLength(500)
                 .IsRequired();
-        }
+
+			builder.HasOne(c => c.Post)
+				.WithMany(p => p.Comments)
+				.HasForeignKey(p => p.PostId)
+				.HasConstraintName("FK_Comments_Posts")
+				.OnDelete(DeleteBehavior.Cascade);
+		}
     }
 }

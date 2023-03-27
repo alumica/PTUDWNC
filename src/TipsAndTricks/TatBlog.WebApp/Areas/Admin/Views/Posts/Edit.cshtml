@@ -50,7 +50,7 @@
 		<label asp-for="Description"
 	  class="col-sm-2 col-form-label"></label>
 		<div class="col-sm-10">
-			<textarea class="form-control"
+			<textarea class="form-control" rows="15"
 					  asp-for="Description"></textarea>
 			<span asp-validation-for="Description"
 	  class="text-danger"></span>
@@ -111,7 +111,7 @@
 			<label asp-for="ImageUrl"
 				class="col-sm-2 col-form-label"></label>
 				<div class="col-sm-10">
-					<img src="/@Model.ImageUrl" />
+					<img src="/@Model.ImageUrl" style="max-width: 300px;"/>
 				</div>
 		</div>
 	}

@@ -110,10 +110,12 @@ namespace TatBlog.Data.Migrations
             modelBuilder.Entity("TatBlog.Core.Entities.Comment", b =>
                 {
                     b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<bool?>("Approved")
-                        .IsRequired()
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Approved")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
@@ -131,10 +133,15 @@ namespace TatBlog.Data.Migrations
                     b.Property<bool>("Gender")
                         .HasColumnType("bit");
 
+                    b.Property<int>("PostId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("PostedDate")
                         .HasColumnType("datetime");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("PostId");
 
                     b.ToTable("Comments", (string)null);
                 });
@@ -287,10 +294,10 @@ namespace TatBlog.Data.Migrations
                 {
                     b.HasOne("TatBlog.Core.Entities.Post", "Post")
                         .WithMany("Comments")
-                        .HasForeignKey("Id")
+                        .HasForeignKey("PostId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("FK_Posts_Comments");
+                        .HasConstraintName("FK_Comments_Posts");
 
                     b.Navigation("Post");
                 });

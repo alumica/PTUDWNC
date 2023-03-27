@@ -1,9 +1,11 @@
 ﻿@model Post
 
 @{
-	var postQuery = (ViewBag.PostQuery as PostQuery) ?? new PostQuery();
+    var postQuery = (ViewBag.PostQuery as PostQuery) ?? new PostQuery();
+    var comment = new Comment();
+    comment.PostId = ViewBag.PostId;
 
-	ViewData["PageTitle"] = "Bài viết - " + Model.Title;	
+	ViewData["PageTitle"] = "Bài viết - " + Model.Title;
 }
 
 <div class="p-4">
@@ -18,6 +20,22 @@
         <p>@Model.ShortDescription</p>
         <hr>
         <p>@Model.Description</p>
+        <div class="d-inline mb-4">
+            <div>
+                Tag:
+            </div>
+
+            @foreach (var item in Model.Tags)
+            {
+                <a asp-controller="Blog"
+               asp-action="Tag"
+               asp-route-slug="@item.UrlSlug"
+                   title="Tag: @item.Name"
+                   class="btn btn-sm btn-outline-secondary">
+                    @item.Name
+                </a>
+            }
+        </div>
       </article>    
 	@*<article class="blog-post">
         <h2 class="blog-post-title mb-1">Sample blog post</h2>
@@ -73,6 +91,6 @@
         <p>This is some additional paragraph placeholder content. It's a slightly shorter version of the other highly repetitive body text used throughout.</p>
       </article>    *@
 
-	<partial name="_Comment" model="@Model.Comments" />
+    <partial name="_Comment" model="comment" />
 </div>
 

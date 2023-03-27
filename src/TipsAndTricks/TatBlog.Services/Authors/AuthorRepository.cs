@@ -21,9 +21,16 @@ namespace TatBlog.Services.Authors
             _context = context;
         }
 
-		// Lấy danh sách tác giả và số lượng bài viết
-		// nằm thuộc từng tác giả
-		public async Task<IList<AuthorItem>> GetAuthorsAsync(
+        public async Task<int> NumberAuthorsAsync(
+            CancellationToken cancellationToken = default)
+        {
+            return await _context.Set<Author>()
+                .CountAsync(cancellationToken);
+        }
+
+        // Lấy danh sách tác giả và số lượng bài viết
+        // nằm thuộc từng tác giả
+        public async Task<IList<AuthorItem>> GetAuthorsAsync(
 			CancellationToken cancellationToken = default)
         {
 			IQueryable<Author> authors = _context.Set<Author>();
@@ -43,7 +50,14 @@ namespace TatBlog.Services.Authors
                     PostCount = x.Posts.Count(p => p.Published)
                 }).ToListAsync(cancellationToken);
 		}
-
+		public async Task<Author> GetAuthorByIdAsync(
+			int id,
+			CancellationToken cancellationToken = default)
+        {
+			return await _context.Set<Author>()
+				.Where(p => p.Id == id)
+				.FirstOrDefaultAsync(cancellationToken);
+		}
 		// 2. Tạo các lớp và định nghĩa các phương thức
 		// cần thiết để truy vấn và cập nhật thông tin tác giả bài viết.
 		// 2.a. Tạo interface IAuthorRepository và lớp AuthorRepository.
@@ -94,8 +108,33 @@ namespace TatBlog.Services.Authors
             return await authorQuery.ToPagedListAsync(pagingParams, cancellationToken);
         }
 
-        // 2.e. Thêm hoặc cập nhật thông tin một tác giả.
-        public async Task AddOrUpdateAuthorAsync(
+		public async Task<IPagedList<AuthorItem>> GetPagedAuthorsAsync(
+			int pageNumber,
+			int pageSize,
+			CancellationToken cancellationToken = default)
+        {
+			var authorQuery = _context.Set<Author>()
+				.Select(x => new AuthorItem()
+				{
+					Id = x.Id,
+					FullName = x.FullName,
+					UrlSlug = x.UrlSlug,
+					ImageUrl = x.ImageUrl,
+					JoinedDate = x.JoinedDate,
+					Email = x.Email,
+					Notes = x.Notes,
+					PostCount = x.Posts.Count(p => p.Published)
+				});
+
+			return await authorQuery
+                .ToPagedListAsync(
+                pageNumber, pageSize,
+                nameof(Author.FullName), "DESC",
+                cancellationToken);
+		}
+
+		// 2.e. Thêm hoặc cập nhật thông tin một tác giả.
+		public async Task AddOrUpdateAuthorAsync(
             Author author,
             CancellationToken cancellationToken = default)
         {
@@ -120,6 +159,24 @@ namespace TatBlog.Services.Authors
                 _context.Authors.Add(author);
                 _context.SaveChanges();
             }
+        }
+
+        public async Task<Author> CreateOrUpdateAuthorAsync(
+            Author author,
+            CancellationToken cancellationToken = default)
+        {
+            if (author.Id > 0)
+            {
+                _context.Set<Author>().Update(author);
+            }
+            else
+            {
+                _context.Set<Author>().Add(author);
+            }
+
+            await _context.SaveChangesAsync(cancellationToken);
+
+            return author;
         }
 
         public async Task<bool> IsAuthorSlugExistedAsync(
@@ -154,5 +211,19 @@ namespace TatBlog.Services.Authors
             .Take(n)
             .ToListAsync(cancellationToken);
         }
-    }
+
+		public async Task<bool> DeleteAuthorByIdAsync(
+			int id,
+			CancellationToken cancellationToken = default)
+        {
+			var author = await _context.Set<Author>().FindAsync(id);
+
+			if (author is null) return false;
+
+			_context.Set<Author>().Remove(author);
+			var rowsCount = await _context.SaveChangesAsync(cancellationToken);
+
+			return rowsCount > 0;
+		}
+	}
 }

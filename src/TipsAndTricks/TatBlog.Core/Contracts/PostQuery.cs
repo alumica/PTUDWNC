@@ -32,6 +32,8 @@ namespace TatBlog.Core.DTO
 
         public bool PublishedOnly { get; set; }
 
+        public bool NotPublished { get; set; }
+
         public string Keyword { get; set; }
     }
 }

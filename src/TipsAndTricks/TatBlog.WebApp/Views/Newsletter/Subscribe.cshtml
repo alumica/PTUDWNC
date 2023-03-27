@@ -1,5 +1,19 @@
-﻿
+﻿@model bool
 
 @{
 	ViewData["PageTitle"] = "Đăng ký - ";	
+}
+
+@if (@Model)
+{
+	<script>
+
+		alert("Đăng ký nhận thành công!");
+	</script>
+}
+else
+{
+	<script>
+		alert("Đăng ký nhận thất bại!");
+	</script>
 }

@@ -14,11 +14,13 @@ namespace TatBlog.Core.Entities
 
         public bool Gender { get; set; }
 
-        public bool? Approved { get; set; }
+        public bool Approved { get; set; }
 
         public DateTime PostedDate { get; set; }
 
         public string Description { get; set; }
+
+        public int PostId { get; set; }
 
         public Post Post { get; set; }
     }

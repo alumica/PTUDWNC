@@ -1,6 +1,70 @@
-﻿@{
-	ViewData["PageTitle"] = "Bảng điều khiển";
+﻿
+@{
+    ViewData["PageTitle"] = "Bảng điều khiển";
 }
-<h1>
-	Đây là khu vực dành cho người quản trị
-</h1>
+
+
+<div class="d-flex flex-row mw-75 flex-wrap mt-3">
+    <div class="card text-black mb-3 me-5" style="min-width: 18rem;">
+        <div class="card-header text-white bg-primary">
+            Tổng số bài viết
+        </div>
+        <div class="card-body border-primary border">
+            <h4 class="card-title">@ViewBag.TotalPosts</h4>
+        </div>
+    </div>
+
+    <div class="card text-black mb-3 me-5" style="min-width: 18rem;">
+        <div class="card-header text-white bg-danger">
+            Số bài viết chưa xuất bản
+        </div>
+        <div class="card-body border-danger border">
+            <h4 class="card-title">@ViewBag.NumberPostsUnpublished</h4>
+        </div>
+    </div>
+
+    <div class="card text-black mb-3 me-5" style="min-width: 18rem;">
+        <div class="card-header text-white bg-warning">
+            Số lượng chủ đề
+        </div>
+        <div class="card-body border-warning border">
+            <h4 class="card-title">@ViewBag.NumberCategories</h4>
+        </div>
+    </div>
+
+    <div class="card text-black mb-3 me-5" style="min-width: 18rem;">
+        <div class="card-header text-white bg-info">
+            Số lượng tác giả
+        </div>
+        <div class="card-body border-info border">
+            <h4 class="card-title">@ViewBag.NumberAuthors</h4>
+        </div>
+    </div>
+
+    <div class="card text-black mb-3 me-5" style="min-width: 18rem;">
+        <div class="card-header text-white bg-dark">
+            Số lượng bình luận chờ duyệt
+        </div>
+        <div class="card-body border-dark border">
+            <h4 class="card-title">@ViewBag.NumberCommentsUnapproved</h4>
+        </div>
+    </div>
+
+    <div class="card text-black mb-3 me-5" style="min-width: 18rem;">
+        <div class="card-header text-black bg-light">
+            Số lượng người theo dõi
+        </div>
+        <div class="card-body border-light border">
+            <h4 class="card-title">@ViewBag.NumberSubscribers</h4>
+        </div>
+    </div>
+
+    <div class="card text-black mb-3 me-5" style="min-width: 18rem;">
+        <div class="card-header text-white bg-success">
+            Số lượng người theo dõi mới
+        </div>
+        <div class="card-body border-success border">
+            <h4 class="card-title">@ViewBag.NumberSubscribersToday</h4>
+        </div>
+    </div>
+</div>

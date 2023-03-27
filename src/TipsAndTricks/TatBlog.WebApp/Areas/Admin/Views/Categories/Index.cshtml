@@ -1,5 +1,102 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@*@model TatBlog.WebApp.Areas.Admin.Models.CategoryFilterModel*@
+@model IPagedList<CategoryItem>
 @{
+    ViewData["PageTitle"] = "Danh sách chủ đề";
+    var categoriesList = Model;
+
+    //var categoriesList = ViewBag.CategoriesList as IPagedList<CategoryItem>;
+  
+}
+
+<h1>
+    Danh sách chủ đề
+</h1>
+
+<!-- Hiển thị Form để tìm bài viết -->
+<partial name="_CategoryFilterPane" />
+
+<style>
+    tr th:nth-last-child(-n+2){
+        text-align:center;    
+    }
+
+    tr td:nth-last-child(-n+2) {
+        text-align: center;
+    }
+</style>
+
+
+@if (categoriesList != null && categoriesList.Count > 0)
+{
+    <table class="table table-responsive table-striped">
+        <thead>
+            <tr>
+                <th>Tên chủ đề</th>
+                <th>Số bài viết</th>
+                <th>Hiển thị trên menu</th>
+                <th>Xóa</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var category in categoriesList)
+            {
+                <tr>
+                    <td>
+                        <a asp-area="Admin"
+                   asp-controller="Categories"
+                   asp-action="Edit"
+                   asp-route-id="@category.Id"
+                           class="text-bold">
+                            @category.Name
+                        </a>
+
+                        <p class="text-muted">
+                            @category.Description
+                        </p>
+                    </td>
+                    <td>
+                        @category.PostCount
+                    </td>
+                    <td>
+                        <a asp-area="Admin"
+                   asp-controller="Categories"
+                   asp-action="ToggleShowOnMenu"
+                   asp-route-id="@category.Id"
+                           class="btn btn-sm @(category.ShowOnMenu ? "btn-success" : "btn-danger")"
+                           onclick="">
+                            @if (category.ShowOnMenu)
+                            {
+                                <i class="fa fa-check"></i>
+                            }
+                            else
+                            {
+                                <i class="fa fa-times"></i>
+                            }
+                        </a>
+                    </td>
+
+                    <td>
+                        <a asp-area="Admin"
+                           asp-controller="Categories"
+                           asp-action="DeleteCategory"
+                           asp-route-id="@category.Id"
+                           class="btn btn-sm btn-danger"
+                           onclick="return confirm('Bạn muốn xóa chuyên mục này không ?');">
+                            <i class="fa fa-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <script>
+    </script>
+
+    <partial name="_PagerAdmin" model="@categoriesList"></partial>
+}
+else
+{
+    <h1 class="text-danger">
+        Không tìm thấy chuyên mục nào
+    </h1>
 }

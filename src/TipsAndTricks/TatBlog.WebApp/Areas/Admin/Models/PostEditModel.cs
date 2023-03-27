@@ -22,8 +22,8 @@ namespace TatBlog.WebApp.Areas.Admin.Models
         public string Meta { get; set; }
 
         [DisplayName("Slug")]
-        //[Remote(action: "VerifyPostSlug", controller:"Posts", areaName: "Admin",
-        //    HttpMethod = "post", AdditionalFields = "Id")]
+        [Remote(action: "VerifyPostSlug", controller: "Posts", areaName: "Admin",
+            HttpMethod = "post", AdditionalFields = "Id")]
         public string UrlSlug { get; set; }
 
         [DisplayName("Chọn hình ảnh")]

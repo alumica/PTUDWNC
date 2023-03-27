@@ -1,14 +1,152 @@
-﻿@model IList<Comment>
+﻿@model Comment
+@{
+	IList<Comment> commentsList = ViewBag.CommentsList;
+}
 
-<div class="d-flex flex-row mb-3">
-	@foreach (var item in Model)
-	{
-		<div class="p-2">@item.Description</div>
+
+<style>
+	.be-comment-block {
+		margin-bottom: 50px !important;
+		border: 1px solid #edeff2;
+		border-radius: 2px;
+		padding: 50px 70px;
+		border: 1px solid #ffffff;
 	}
-	
-</div>
-<div class="d-flex flex-row-reverse">
-	<div class="p-2">Flex item 1</div>
-	<div class="p-2">Flex item 2</div>
-	<div class="p-2">Flex item 3</div>
-</div>
+
+	.comments-title {
+		color: #262626;
+		margin-bottom: 15px;
+	}
+
+
+
+	.be-comment-content {
+		margin-left: 80px;
+	}
+
+		.be-comment-content span {
+			display: inline-block;
+			width: 49%;
+			margin-bottom: 15px;
+		}
+
+	.be-comment-content h4 {
+		color: #383b43;
+	}
+
+	.be-comment-content span {
+		display: inline-block;
+		width: 49%;
+		margin-bottom: 15px;
+	}
+
+	.be-comment-time {
+		text-align: right;
+	}
+
+	.be-comment-time {
+		color: #b4b7c1;
+	}
+
+	.be-comment-text {
+		line-height: 18px;
+		color: #7a8192;
+		display: block;
+		background: #f6f6f7;
+		border: 1px solid #edeff2;
+		padding: 15px 20px 20px 20px;
+	}
+
+	.form-group.fl_icon .icon {
+		position: absolute;
+		top: 1px;
+		left: 16px;
+		width: 48px;
+		height: 48px;
+		background: #f6f6f7;
+		color: #b5b8c2;
+		text-align: center;
+		line-height: 50px;
+		-webkit-border-top-left-radius: 2px;
+		-webkit-border-bottom-left-radius: 2px;
+		-moz-border-radius-topleft: 2px;
+		-moz-border-radius-bottomleft: 2px;
+		border-top-left-radius: 2px;
+		border-bottom-left-radius: 2px;
+	}
+
+	.form-group .form-input {
+		line-height: 50px;
+		font-weight: 400;
+		color: #b4b7c1;
+		width: 100%;
+		height: 50px;
+		padding-left: 20px;
+		padding-right: 20px;
+		border: 1px solid #edeff2;
+		border-radius: 3px;
+	}
+
+	.form-group textarea.form-input {
+		height: 150px;
+	}
+</style>
+
+<div class="border border-light w-75 p-3">
+	<form class="row p-5"
+		asp-area=""
+		asp-controller="Blog"
+		asp-action="Comments"
+		enctype="multipart/form-data"
+		method="post">
+		<h5>Bình luận</h5>
+		<input type="hidden" asp-for="PostId" />
+		<div class="mb-3 col">
+			<input asp-for="FullName" type="text" class="form-control" id="comment-fullname"  placeholder="Họ và tên">
+		</div>
+		<div class="mb-3 col">
+			<div class="form-check form-check-inline">
+				<input class="form-check-input" asp-for="Gender" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="male">
+				<label class="form-check-label" for="inlineRadio1">Nam</label>
+			</div>
+			<div class="form-check form-check-inline">
+				<input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="female">
+				<label class="form-check-label" for="inlineRadio2">Nữ</label>
+			</div>
+		</div>
+		<div class="w-100"></div>
+		<div class="mb-3 col">
+			<textarea asp-for="Description" type="text" class="form-control" id="" placeholder="Nội dung">
+				</textarea>
+
+		</div>
+		<button type="submit" class="btn btn-primary">Submit</button>
+	</form>
+	<h3 class="comments-title">Comments (@commentsList.Count(x => x.Approved))</h3>
+	@foreach (var item in commentsList)
+		{
+			@if (@item.Approved)
+			{
+				<div class="be-comment">
+					<div class="be-comment-content">
+
+						<span class="be-comment-name">
+							<h4>@item.FullName</h4>
+						</span>
+						<span class="be-comment-time">
+							<i class="fa fa-clock-o"></i>
+							@item.PostedDate
+						</span>
+
+						<p class="be-comment-text">
+							@item.Description
+						</p>
+					</div>
+				</div>
+			}
+			
+		
+
+		}
+		
+	</div>

@@ -1,5 +1,114 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model IPagedList<Comment>
 @{
+    ViewData["PageTitle"] = "Danh sách bình luận";
+    var commentsList = Model;
+}
+
+<h1>
+    Danh sách bình luận
+</h1>
+
+
+<style>
+    tr th:nth-last-child(-n+2){
+        text-align:center;    
+    }
+
+    tr td:nth-last-child(-n+2) {
+        text-align: center;
+    }
+</style>
+
+
+@if (commentsList != null && commentsList.Count > 0)
+{
+    <table class="table table-responsive table-striped">
+        <thead>
+            <tr>
+                <th>Bài viết</th>
+                <th>Họ và tên</th>
+                <th>Nội dung bình luận</th>
+                <th>Ngày bình luận</th>
+                <th>Đã phê duyệt</th>
+                <th>Xóa</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var comment in commentsList)
+            {
+                <tr>
+                    <td>
+                        <a asp-area=""
+                   asp-controller="Blog"
+                   asp-action="Post"
+                   asp-route-year="@comment.Post.PostedDate.Year"
+                   asp-route-month="@comment.Post.PostedDate.Month"
+                   asp-route-day="@comment.Post.PostedDate.Day"
+                   asp-route-slug="@comment.Post.UrlSlug"
+                           class="text-bold" target="_blank">
+                            @comment.Post.Title
+                        </a>
+
+                        <p class="text-muted">
+                            @comment.Post.ShortDescription
+                        </p>
+                    </td>
+                    <td>
+                        <p
+                           class="text-bold">
+                            @comment.FullName
+                        </p>
+
+                        <p class="text-muted">
+                            @comment.Gender
+                        </p>
+                    </td>
+                    <td>
+                        @comment.Description
+                    </td>
+                    <td>
+                        @comment.PostedDate
+                    </td>
+                    <td>
+                        <a asp-area="Admin"
+                   asp-controller="Comments"
+                   asp-action="ToggleApproved"
+                   asp-route-id="@comment.Id"
+                           class="btn btn-sm @(comment.Approved ? "btn-success" : "btn-danger")"
+                           onclick="">
+                            @if (comment.Approved)
+                            {
+                                <i class="fa fa-check"></i>
+                            }
+                            else
+                            {
+                                <i class="fa fa-times"></i>
+                            }
+                        </a>
+                    </td>
+
+                    <td>
+                        <a asp-area="Admin"
+                   asp-controller="Comments"
+                   asp-action="DeleteComment"
+                   asp-route-id="@comment.Id"
+                           class="btn btn-sm btn-danger"
+                           onclick="return confirm('Bạn muốn xóa bình luận này không ?');">
+                            <i class="fa fa-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <script>
+    </script>
+
+    <partial name="_PagerAdmin" model="@commentsList"></partial>
+}
+else
+{
+    <h1 class="text-danger">
+        Không tìm thấy bình luận nào
+    </h1>
 }

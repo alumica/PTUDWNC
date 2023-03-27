@@ -1,16 +1,31 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using FluentValidation;
+using MapsterMapper;
+using Microsoft.AspNetCore.Mvc;
 using TatBlog.Core.DTO;
+using TatBlog.Core.Entities;
+using TatBlog.Services.Authors;
 using TatBlog.Services.Blogs;
+using TatBlog.Services.Media;
+using TatBlog.WebApp.Areas.Admin.Controllers;
+using TatBlog.WebApp.Areas.Admin.Models;
 
 namespace TatBlog.WebApp.Controllers
 {
     public class BlogController : Controller
     {
-        private readonly IBlogRepository _blogRepository;
+		private readonly ILogger<PostsController> _logger;
+		private readonly IBlogRepository _blogRepository;
+		private readonly IAuthorRepository _authorRepository;
+		private readonly IMapper _mapper;
+		private readonly IMediaManager _mediaManager;
+		private readonly IValidator<PostEditModel> _validator;
 
-        public BlogController(IBlogRepository blogRepository)
+		public BlogController(
+            IBlogRepository blogRepository,
+            IMapper mapper)
         {
             _blogRepository = blogRepository;
+            _mapper = mapper;
         }
 
         public async Task<IActionResult> Index(
@@ -111,9 +126,11 @@ namespace TatBlog.WebApp.Controllers
                 .GetPostAsync(year, month, slug);
             await _blogRepository.IncreaseViewCountAsync(post.Id);
 
-            //ViewBag.PostQuery = postQuery;
+            ViewBag.CommentsList = post.Comments;
+            ViewBag.PostId = post.Id;
 
-            return View(post);
+
+			return View(post);
         }
 
         public async Task<IActionResult> Archives(
@@ -138,7 +155,35 @@ namespace TatBlog.WebApp.Controllers
 
             return View(postList);
         }
-        public IActionResult About()
+
+        [HttpPost]
+		public async Task<IActionResult> Comments(
+			Comment comment)
+		{
+			var post = await _blogRepository.GetPostByIdAsync(comment.PostId);
+
+            _mapper.Map<Comment>(comment);
+            if (comment.Gender)
+            {
+                comment.Gender = false;
+            }
+            else comment.Gender = true;
+            comment.PostedDate = DateTime.Now;
+
+            await _blogRepository.CreateCommentAsync(comment);
+
+			return RedirectToAction(
+                "Post",
+                "Blog",
+                new {
+                    area = "" ,
+                    year = post.PostedDate.Year,
+                    month = post.PostedDate.Month,
+                    day = post.PostedDate.Day,
+                    slug = post.UrlSlug});
+		}
+
+		public IActionResult About()
             => View();
 
         public IActionResult Contact()

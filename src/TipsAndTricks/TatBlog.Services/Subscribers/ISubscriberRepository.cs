@@ -14,6 +14,11 @@ namespace TatBlog.Services.Subscribers
             string email,
             CancellationToken cancellationToken = default);
 
+        Task<int> NumberSubscribersAsync(
+            CancellationToken cancellationToken = default);
+
+        Task<int> NumberSubscribersTodayAsync(
+            CancellationToken cancellationToken = default);
 
         // e.Định nghĩa các phương thức để thực hiện các công việc sau:
         // Đăng ký theo dõi: SubscribeAsync(email)
@@ -29,10 +34,9 @@ namespace TatBlog.Services.Subscribers
             CancellationToken cancellationToken = default);
 
         // Chặn một người theo dõi: BlockSubscriberAsync(id, reason, notes)
-        Task BlockSubscriberAsync(
-            int id,
-            string reason,
-            string notes,
+        Task ToggleBlockSubscriberAsync(
+            Subscriber subscriber,
+            bool type,
             CancellationToken cancellationToken = default);
 
         // Xóa một người theo dõi: DeleteSubscriberAsync(id)
@@ -54,5 +58,15 @@ namespace TatBlog.Services.Subscribers
         Task<IPagedList<Subscriber>> SearchSubscribersAsync(
             IPagingParams pagingParams,
             CancellationToken cancellationToken = default);
-    }
+
+        Task<IPagedList<Subscriber>> GetPagedSubscribersAsync(
+            int pageNumber = 1,
+            int pageSize = 10,
+            CancellationToken cancellationToken = default);
+
+        Task SendEmailUnsubscribe(
+            string toEmail,
+            string linkUnsub = null,
+            CancellationToken cancellationToken = default);
+	}
 }

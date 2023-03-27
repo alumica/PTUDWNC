@@ -11,9 +11,16 @@ namespace TatBlog.Services.Authors
 {
     public interface IAuthorRepository
     {
+        Task<int> NumberAuthorsAsync(
+            CancellationToken cancellationToken = default);
+
 		// Lấy danh sách tác giả và số lượng bài viết
 		// nằm thuộc từng tác giả
 		Task<IList<AuthorItem>> GetAuthorsAsync(
+			CancellationToken cancellationToken = default);
+
+		Task<Author> GetAuthorByIdAsync(
+            int id,
 			CancellationToken cancellationToken = default);
 
 
@@ -37,10 +44,18 @@ namespace TatBlog.Services.Authors
         Task<IPagedList<AuthorItem>> GetPagedAuthorsAsync(
             IPagingParams pagingParams,
             CancellationToken cancellationToken = default);
+		Task<IPagedList<AuthorItem>> GetPagedAuthorsAsync(
+			int pageNumber,
+            int pageSize,
+			CancellationToken cancellationToken = default);
 
-        // 2.e. Thêm hoặc cập nhật thông tin một tác giả.
-        Task AddOrUpdateAuthorAsync(
+		// 2.e. Thêm hoặc cập nhật thông tin một tác giả.
+		Task AddOrUpdateAuthorAsync(
             Author author,
+            CancellationToken cancellationToken = default);
+
+        Task<Author> CreateOrUpdateAuthorAsync(
+            Author author, 
             CancellationToken cancellationToken = default);
 
         Task<bool> IsAuthorSlugExistedAsync(
@@ -52,6 +67,11 @@ namespace TatBlog.Services.Authors
         // N là tham số đầu vào.
         Task<IList<AuthorItem>> FindListAuthorsMostPostAsync(
             int n,
+            CancellationToken cancellationToken = default);
+
+
+        Task<bool> DeleteAuthorByIdAsync(
+            int id,
             CancellationToken cancellationToken = default);
     }
 }

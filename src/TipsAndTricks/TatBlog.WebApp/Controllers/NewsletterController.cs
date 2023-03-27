@@ -17,10 +17,8 @@ namespace TatBlog.WebApp.Controllers
             string email)
         {
             var subscribe = await _subcriberRepository.SubscribeAsync(email);
-            if (subscribe != null)
-            {
-
-            }
+            //if (subscribe)
+            //    await _subcriberRepository.SendEmailUnsubscribe(email);
             return View(subscribe);
         }
 

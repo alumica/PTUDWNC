@@ -68,12 +68,6 @@ namespace TatBlog.Data.Mappings
             builder.HasMany(p => p.Tags)
                 .WithMany(t => t.Posts)
                 .UsingEntity(pt => pt.ToTable("PostTags"));
-
-            builder.HasMany(p => p.Comments)
-                .WithOne(t => t.Post)
-                .HasForeignKey(c => c.Id)
-                .HasConstraintName("FK_Posts_Comments")
-                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
