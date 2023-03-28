@@ -137,6 +137,7 @@ namespace TatBlog.Services.Blogs
         // kết quả trả về kiểu IPagedList<CategoryItem>.
         Task<IPagedList<CategoryItem>> GetPagedCategoriesAsync(
             IPagingParams pagingParams,
+            string name = null,
             CancellationToken cancellationToken = default);
         Task<IPagedList<CategoryItem>> GetPagedCategoriesAsync(
             int pageNumber = 1,

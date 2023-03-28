@@ -23,13 +23,23 @@ namespace TatBlog.Services.Authors
             int id,
 			CancellationToken cancellationToken = default);
 
+        Task<Author> GetAuthorBySlugAsync(
+            string slug,
+            CancellationToken cancellationToken = default);
 
-		// 2. Tạo các lớp và định nghĩa các phương thức
-		// cần thiết để truy vấn và cập nhật thông tin tác giả bài viết.
-		// 2.a. Tạo interface IAuthorRepository và lớp AuthorRepository.
+        // 2. Tạo các lớp và định nghĩa các phương thức
+        // cần thiết để truy vấn và cập nhật thông tin tác giả bài viết.
+        // 2.a. Tạo interface IAuthorRepository và lớp AuthorRepository.
 
-		// 2.b. Tìm một tác giả theo mã số.
-		Task<Author> FindAuthorByIdAsync(
+        Task<Author> GetCachedAuthorBySlugAsync(
+            string slug, 
+            CancellationToken cancellationToken = default);
+
+        Task<Author> GetCachedAuthorByIdAsync(
+            int authorId,
+            CancellationToken cancellationToken = default);
+        // 2.b. Tìm một tác giả theo mã số.
+        Task<Author> FindAuthorByIdAsync(
             int id,
             CancellationToken cancellationToken = default);
 
@@ -43,14 +53,23 @@ namespace TatBlog.Services.Authors
         // Kết quả trả về kiểu IPagedList<AuthorItem>.
         Task<IPagedList<AuthorItem>> GetPagedAuthorsAsync(
             IPagingParams pagingParams,
+            string name = null,
             CancellationToken cancellationToken = default);
-		Task<IPagedList<AuthorItem>> GetPagedAuthorsAsync(
+
+        Task<IPagedList<T>> GetPagedAuthorsAsync<T>(
+            Func<IQueryable<Author>, IQueryable<T>> mapper,
+            IPagingParams pagingParams,
+            string name = null,
+            CancellationToken cancellationToken = default);
+
+
+        Task<IPagedList<AuthorItem>> GetPagedAuthorsAsync(
 			int pageNumber,
             int pageSize,
 			CancellationToken cancellationToken = default);
 
-		// 2.e. Thêm hoặc cập nhật thông tin một tác giả.
-		Task AddOrUpdateAuthorAsync(
+        // 2.e. Thêm hoặc cập nhật thông tin một tác giả.
+        Task<bool> AddOrUpdateAuthorAsync(
             Author author,
             CancellationToken cancellationToken = default);
 
@@ -72,6 +91,10 @@ namespace TatBlog.Services.Authors
 
         Task<bool> DeleteAuthorByIdAsync(
             int id,
+            CancellationToken cancellationToken = default);
+
+        Task<bool> SetImageUrlAsync(
+            int authorId, string imageUrl,
             CancellationToken cancellationToken = default);
     }
 }

@@ -413,9 +413,13 @@ namespace TatBlog.Services.Blogs
         // kết quả trả về kiểu IPagedList<CategoryItem>.
         public async Task<IPagedList<CategoryItem>> GetPagedCategoriesAsync(
             IPagingParams pagingParams,
+            string name = null,
             CancellationToken cancellationToken = default)
         {
             var categoryQuery = _context.Set<Category>()
+                .AsNoTracking()
+                .WhereIf(!string.IsNullOrWhiteSpace(name),
+                    x => x.Name.Contains(name))
                 .Select(x => new CategoryItem()
                 {
                     Id = x.Id,
