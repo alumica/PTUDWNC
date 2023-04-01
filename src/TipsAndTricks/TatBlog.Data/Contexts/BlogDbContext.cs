@@ -23,6 +23,8 @@ namespace TatBlog.Data.Contexts
 
         public DbSet<Comment> Comments { get; set; }
 
+        public DbSet<Contact> Contacts { get; set; }
+
         public BlogDbContext() { }
 
         public BlogDbContext(DbContextOptions<BlogDbContext> options) : base(options)

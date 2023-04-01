@@ -26,6 +26,12 @@ namespace TatBlog.Services.Blogs
             bool includeDetails = false,
             CancellationToken cancellationToken = default);
 
+        // Tìm bài viết có tên định danh là 'slug'
+        Task<Post> GetPostBySlugAsync(
+            string slug,
+            bool includeDetails = false,
+            CancellationToken cancellationToken = default);
+
         // Tìm Top N bài viết phổ biến được nhiều người xem nhất
         Task<IList<Post>> GetPopularArticlesAsync(
             int numPosts,
@@ -57,6 +63,10 @@ namespace TatBlog.Services.Blogs
             int id,
             CancellationToken cancellationToken = default);
 
+        Task<Category> GetCachedCategoryByIdAsync(
+            int categoryId,
+            CancellationToken cancellationToken = default);
+
         Task<bool> ToggleShowOnMenuAsync(
             int id = 0,
             CancellationToken cancellationToken = default);
@@ -65,13 +75,19 @@ namespace TatBlog.Services.Blogs
         // các tham số pagingParams
         Task<IPagedList<TagItem>> GetPagedTagsAsync(
             IPagingParams pagingParams,
+            string name = null,
             CancellationToken cancellationToken = default);
 
 		Task<IPagedList<TagItem>> GetPagedTagsAsync(
 			int pageNumber = 1, int pageSize = 10,
 			CancellationToken cancellationToken = default);
 
-		Task<Tag> CreateOrUpdateTagAsync(
+        Task<bool> AddOrUpdateTagAsync(
+            Tag tag,
+            CancellationToken cancellationToken = default);
+
+
+        Task<Tag> CreateOrUpdateTagAsync(
 			Tag tag,
 			CancellationToken cancellationToken = default);
 
@@ -97,8 +113,12 @@ namespace TatBlog.Services.Blogs
 			int id,
 			CancellationToken cancellationToken = default);
 
-		// 1.d. Xóa một thẻ theo mã cho trước.
-		Task<bool> DeleteTagByIdAsync(
+        Task<Tag> GetCachedTagByIdAsync(
+            int tagId,
+            CancellationToken cancellationToken = default);
+
+        // 1.d. Xóa một thẻ theo mã cho trước.
+        Task<bool> DeleteTagByIdAsync(
             int id,
             CancellationToken cancellationToken = default);
 
@@ -113,9 +133,10 @@ namespace TatBlog.Services.Blogs
             CancellationToken cancellationToken = default);
 
         // 1.g. Thêm hoặc cập nhật một chuyên mục/chủ đề. 
-        Task AddOrUpdateCategoryAsync(
+        Task<bool> AddOrUpdateCategoryAsync(
             Category category,
             CancellationToken cancellationToken = default);
+
         Task<Category> CreateOrUpdateCategoryAsync(
             Category category,
             CancellationToken cancellationToken = default);
@@ -161,9 +182,9 @@ namespace TatBlog.Services.Blogs
             int id, CancellationToken cancellationToken = default);
 
         // 1.m. Thêm hay cập nhật một bài viết.
-        Task AddOrUpdatePostAsync(
+        Task<bool> AddOrUpdatePostAsync(
             Post post,
-            List<string> tags = null,
+            IEnumerable<string> tags = null,
             CancellationToken cancellationToken = default);
 
         Task<Post> CreateOrUpdatePostAsync(
@@ -171,8 +192,8 @@ namespace TatBlog.Services.Blogs
             IEnumerable<string> tags,
             CancellationToken cancellationToken = default);
 
-		// 1.n. Chuyển đổi trạng thái Published của bài viết. 
-		Task<bool> SwitchPublisedAsync(
+        // 1.n. Chuyển đổi trạng thái Published của bài viết. 
+        Task<bool> SwitchPublisedAsync(
             int id,
             CancellationToken cancellationToken = default);
 
@@ -232,6 +253,18 @@ namespace TatBlog.Services.Blogs
             Func<IQueryable<Post>, IQueryable<T>> mapper,
             CancellationToken cancellationToken = default);
 
+        Task<Post> GetCachedPostByIdAsync(
+            int postId,
+            CancellationToken cancellationToken = default);
+
+        Task<Post> GetCachedPostBySlugAsync(
+            string slug,
+            CancellationToken cancellationToken = default);
+
+        Task<IPagedList<Comment>> GetPagedCommentAsync(
+            IPagingParams pagingParams,
+            CancellationToken cancellationToken = default);
+
         Task<IPagedList<Comment>> GetPagedCommentAsync(
             int pageNumber, int pageSize,
             CancellationToken cancellationToken = default);
@@ -240,16 +273,36 @@ namespace TatBlog.Services.Blogs
 			int id,
 			CancellationToken cancellationToken = default);
 
+        Task<Comment> GetCachedCommentByIdAsync(
+            int commentId,
+            CancellationToken cancellationToken = default);
+
+        Task<IList<Comment>> GetCommentsByPostIdAsync(
+            int id,
+            CancellationToken cancellationToken = default);
+
+        Task<IList<Comment>> GetCommentsAsync(
+            CancellationToken cancellationToken = default);
+
         Task<Comment> CreateCommentAsync(
             Comment comment,
             CancellationToken cancellationToken = default);
 
-		Task<bool> ToggleApprovedAsync(
+        Task<bool> AddOrUpdateCommentAsync(
+            Comment comment,
+            CancellationToken cancellationToken = default);
+
+
+        Task<bool> ToggleApprovedAsync(
             int id = 0,
             CancellationToken cancellationToken = default);
 
         Task<bool> DeleteCommentByIdAsync(
             int id,
+            CancellationToken cancellationToken = default);
+
+        Task<bool> SetImageUrlAsync(
+            int authorId, string imageUrl,
             CancellationToken cancellationToken = default);
     }
 }

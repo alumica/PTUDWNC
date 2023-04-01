@@ -2,6 +2,7 @@
 using FluentEmail.Razor;
 using FluentEmail.Smtp;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,10 +20,13 @@ namespace TatBlog.Services.Subscribers
     public class SubscriberRepository : ISubscriberRepository
     {
         private readonly BlogDbContext _context;
+        private readonly IMemoryCache _memoryCache;
 
-        public SubscriberRepository(BlogDbContext context)
+
+        public SubscriberRepository(BlogDbContext context, IMemoryCache memoryCache)
         {
             _context = context;
+            _memoryCache = memoryCache;
         }
 
         public async Task<int> NumberSubscribersAsync(
@@ -59,7 +63,20 @@ namespace TatBlog.Services.Subscribers
             return false;
         }
 
-        public async Task UnsubscribeAsync(
+        public async Task<bool> SubscribeAsync(
+            Subscriber subscriber,
+            CancellationToken cancellationToken = default)
+        {
+            if (subscriber.Id <= 0)
+            {
+                _context.Subscribers.Add(subscriber);
+                return await _context.SaveChangesAsync(cancellationToken) > 0;
+            }
+                
+            return false;
+        }
+
+        public async Task<bool> UnsubscribeAsync(
             string email,
             string reason, 
             bool typeReason, 
@@ -67,13 +84,25 @@ namespace TatBlog.Services.Subscribers
         {
             if (!string.IsNullOrWhiteSpace(email) && IsExistedEmail(email).Result)
             {
-               await _context.Set<Subscriber>()
-                .Where(s => s.Email.Equals(email))
-                .ExecuteUpdateAsync(p => p
-                    .SetProperty(x => x.ResonUnsubscribe, x => reason)
-                    .SetProperty(x => x.TypeReason, x => typeReason),
-                    cancellationToken);
-            }
+                if (!typeReason)
+                {
+                    await _context.Set<Subscriber>()
+                    .Where(s => s.Email.Equals(email))
+                    .ExecuteUpdateAsync(b => b
+                        .SetProperty(x => x.ResonUnsubscribe, x => reason)
+                        .SetProperty(x => x.TypeReason, x => typeReason),
+                        cancellationToken);
+                }
+                else
+                {
+                    await _context.Set<Subscriber>()
+                    .Where(s => s.Email == email)
+                    .ExecuteUpdateAsync(s => s.SetProperty(x => x.TypeReason, x => typeReason),
+                        cancellationToken);
+                }
+                return true;
+            }   
+            return false;
 
         }
 
@@ -134,6 +163,19 @@ namespace TatBlog.Services.Subscribers
                 .FirstOrDefaultAsync(cancellationToken);
         }
 
+        public async Task<Subscriber> GetCachedSubscriberByIdAsync(
+            int subscriberId,
+            CancellationToken cancellationToken = default)
+        {
+            return await _memoryCache.GetOrCreateAsync(
+                $"subscriber.by-id.{subscriberId}",
+                async (entry) =>
+                {
+                    entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30);
+                    return await GetSubscriberByIdAsync(subscriberId, cancellationToken);
+                });
+        }
+
         public Task<IPagedList<Subscriber>> SearchSubscribersAsync(
             IPagingParams pagingParams,
             CancellationToken cancellationToken = default)
@@ -147,6 +189,16 @@ namespace TatBlog.Services.Subscribers
         {
             return await _context.Set<Subscriber>()
                 .AnyAsync(s => s.Email.Equals(email), cancellationToken);
+        }
+
+        public async Task<IPagedList<Subscriber>> GetPagedSubscribersAsync(
+            IPagingParams pagingParams,
+            CancellationToken cancellationToken = default)
+        {
+            return await _context.Set<Subscriber>()
+                .ToPagedListAsync(
+                    pagingParams,
+                    cancellationToken);
         }
 
         public async Task<IPagedList<Subscriber>> GetPagedSubscribersAsync(

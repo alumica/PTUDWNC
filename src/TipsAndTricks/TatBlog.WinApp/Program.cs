@@ -1,4 +1,5 @@
 ﻿
+//using Microsoft.Extensions.Caching.Memory;
 //using TatBlog.Core.DTO;
 //using TatBlog.Core.Entities;
 //using TatBlog.Data.Contexts;
@@ -6,6 +7,12 @@
 //using TatBlog.Services.Authors;
 //using TatBlog.Services.Blogs;
 //using TatBlog.WinApp;
+
+public class Program
+{
+    // Uncomment the following line to resolve.
+    static void Main() { }
+}
 
 //// Tạo đối tượng DbContext để quản lý phiên làm việc
 //// với CSDL và trạng thái của các đối tượng

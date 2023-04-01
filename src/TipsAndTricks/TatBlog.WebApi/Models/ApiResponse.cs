@@ -29,8 +29,8 @@ namespace TatBlog.WebApi.Models
         }
 
         public static ApiResponse<T> FailWithResult<T>(
+            HttpStatusCode statusCode,
             T result,
-            HttpStatusCode statusCode = HttpStatusCode.OK,
             params string[] errorMessages)
         {
             return new ApiResponse<T>()
@@ -45,7 +45,7 @@ namespace TatBlog.WebApi.Models
             HttpStatusCode statusCode,
             params string[] errorMessages)
         {
-            if (errorMessages == null || errorMessages.Length == 0) 
+            if (errorMessages is null or { Length: 0 })
             {
                 throw new ArgumentNullException(nameof(errorMessages));
             }
@@ -62,9 +62,9 @@ namespace TatBlog.WebApi.Models
             ValidationResult validationResult)
         {
             return Fail(statusCode, validationResult.Errors
-                .Select(x => x.ErrorMessage)
-                .Where(e => !string.IsNullOrWhiteSpace(e))
-                .ToArray());
+            .Select(x => x.ErrorMessage)
+            .Where(e => !string.IsNullOrWhiteSpace(e))
+            .ToArray());
         }
     }
 

@@ -26,11 +26,15 @@ namespace TatBlog.Services.Subscribers
             string email,
             CancellationToken cancellationToken = default);
 
+        Task<bool> SubscribeAsync(
+            Subscriber subscriber,
+            CancellationToken cancellationToken = default);
+
         // Hủy đăng ký: UnsubscribeAsync(email, reason, voluntary)
-        Task UnsubscribeAsync(
+        Task<bool> UnsubscribeAsync(
             string email,
-            string reason,
-            bool typeReason,
+            string reason = null,
+            bool typeReason = false,
             CancellationToken cancellationToken = default);
 
         // Chặn một người theo dõi: BlockSubscriberAsync(id, reason, notes)
@@ -49,6 +53,10 @@ namespace TatBlog.Services.Subscribers
             int id,
             CancellationToken cancellationToken = default);
 
+        Task<Subscriber> GetCachedSubscriberByIdAsync(
+            int subscriberId,
+            CancellationToken cancellationToken = default);
+
         // Tìm người theo dõi bằng email: GetSubscriberByEmailAsync(email)
         Task<Subscriber> GetSubscriberByEmailAsync(
             string email,
@@ -62,6 +70,10 @@ namespace TatBlog.Services.Subscribers
         Task<IPagedList<Subscriber>> GetPagedSubscribersAsync(
             int pageNumber = 1,
             int pageSize = 10,
+            CancellationToken cancellationToken = default);
+
+        Task<IPagedList<Subscriber>> GetPagedSubscribersAsync(
+            IPagingParams pagingParams,
             CancellationToken cancellationToken = default);
 
         Task SendEmailUnsubscribe(
