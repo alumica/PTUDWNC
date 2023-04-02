@@ -1,4 +1,6 @@
-﻿namespace TatBlog.WebApi.Models
+﻿using System.ComponentModel;
+
+namespace TatBlog.WebApi.Models
 {
     public class PostEditModel
     {
@@ -21,5 +23,9 @@
         public DateTime PostedDate { get; set; }
 
         public DateTime? ModifiedDate { get; set; }
+
+        public int CategoryId { get; set; }
+
+        public int AuthorId { get; set; }
     }
 }

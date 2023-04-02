@@ -2,6 +2,7 @@
 using Mapster;
 using MapsterMapper;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 using TatBlog.Core.Collections;
 using TatBlog.Core.DTO;
 using TatBlog.Core.Entities;
@@ -23,36 +24,27 @@ namespace TatBlog.WebApi.Endpoints
 
             routeGroupBuilder.MapGet("/", GetComments)
                 .WithName("GetComments")
-                .Produces<PaginationResult<Comment>>();
+                .Produces<ApiResponse<PaginationResult<Comment>>>();
 
             routeGroupBuilder.MapGet("/{id:int}", GetCommentDetails)
                 .WithName("GetCommentById")
-                .Produces<Comment>()
-                .Produces(404);
-
-            //routeGroupBuilder.MapGet(
-            //        "/{slug:regex(^[a-z0-9_-]*$)}/posts",
-            //        GetPostsByCategorySlug)
-            //    .WithName("GetPostsByCategorySlugs")
-            //    .Produces<PaginationResult<PostDto>>();
+                .Produces<ApiResponse<Comment>>();
 
             routeGroupBuilder.MapPost("/", AddComment)
-               .WithName("AddNewComment")
-               .AddEndpointFilter<ValidatorFilter<CommentEditModel>>()
-               .Produces(201)
-               .Produces(400)
-               .Produces(409);
+                .WithName("AddNewComment")
+                .AddEndpointFilter<ValidatorFilter<CommentEditModel>>()
+                .Produces(401)
+                .Produces<ApiResponse<Comment>>();
 
             routeGroupBuilder.MapPut("/{id:int}", UpdateComment)
-              .WithName("UpdateAnComment")
-              .Produces(204)
-              .Produces(400)
-              .Produces(409);
+                .WithName("UpdateAnComment")
+                .Produces(401)
+                .Produces<ApiResponse<string>>();
 
             routeGroupBuilder.MapDelete("/{id:int}", DeleteComment)
-              .WithName("DeleteAnComment")
-              .Produces(204)
-              .Produces(404);
+                .WithName("DeleteAnComment")
+                .Produces(401)
+                .Produces<ApiResponse<string>>();
 
             return app;
         }
@@ -66,8 +58,8 @@ namespace TatBlog.WebApi.Endpoints
 
             var paginationResult =
                 new PaginationResult<Comment>(commentsList);
-            
-            return Results.Ok(paginationResult);
+
+            return Results.Ok(ApiResponse.Success(paginationResult));
         }
 
         private static async Task<IResult> GetCommentDetails(
@@ -78,48 +70,8 @@ namespace TatBlog.WebApi.Endpoints
             var comment = await blogRepository.GetCachedCommentByIdAsync(id);
 
             return comment == null
-                ? Results.NotFound($"Không tìm thấy bình luận có mã số {id}")
-                : Results.Ok(mapper.Map<Comment>(comment));
-        }
-
-        private static async Task<IResult> GetPostsByAuthorId(
-            int id,
-            [AsParameters] PagingModel pagingModel,
-            IBlogRepository blogRepository)
-        {
-            var postQuery = new PostQuery()
-            {
-                AuthorId = id,
-                PublishedOnly = true
-            };
-
-            var postsList = await blogRepository.GetPagedPostQueryAsync(
-                postQuery, pagingModel,
-                posts => posts.ProjectToType<PostDto>());
-
-            var paginationResult = new PaginationResult<PostDto>(postsList);
-
-            return Results.Ok(paginationResult);
-        }
-
-        private static async Task<IResult> GetPostsByCategorySlug(
-            string slug,
-            [AsParameters] PagingModel pagingModel,
-            IBlogRepository blogRepository)
-        {
-            var postQuery = new PostQuery()
-            {
-                CategorySlug = slug,
-                PublishedOnly = true
-            };
-
-            var postsList = await blogRepository.GetPagedPostQueryAsync(
-                postQuery, pagingModel,
-                posts => posts.ProjectToType<PostDto>());
-
-            var paginationResult = new PaginationResult<PostDto>(postsList);
-
-            return Results.Ok(paginationResult);
+                ? Results.Ok(ApiResponse.Fail(HttpStatusCode.NotFound, $"Không tìm thấy bình luận có mã số {id}"))
+                : Results.Ok(ApiResponse.Success(mapper.Map<Comment>(comment)));
         }
 
         private static async Task<IResult> AddComment(
@@ -130,25 +82,30 @@ namespace TatBlog.WebApi.Endpoints
             var comment = mapper.Map<Comment>(model);
             await blogRepository.AddOrUpdateCommentAsync(comment);
 
-            return Results.CreatedAtRoute(
-                "GetCommentById", new { comment.Id },
-                mapper.Map<Comment>(comment));
+            return Results.Ok(ApiResponse.Success(
+                mapper.Map<Comment>(comment), HttpStatusCode.Created));
         }
-
-     
 
         private static async Task<IResult> UpdateComment(
             int id,
             CommentEditModel model,
             IBlogRepository blogRepository,
+            IValidator<CommentEditModel> validator,
             IMapper mapper)
         {
+            var validationResult = await validator.ValidateAsync(model);
+            if (!validationResult.IsValid)
+            {
+                return Results.Ok(ApiResponse.Fail(
+                HttpStatusCode.BadRequest, validationResult));
+            }
+
             var comment = mapper.Map<Comment>(model);
             comment.Id = id;
 
             return await blogRepository.AddOrUpdateCommentAsync(comment)
-                ? Results.NoContent()
-                : Results.NotFound();
+                 ? Results.Ok(ApiResponse.Success("Bình luận đã được cập nhật", HttpStatusCode.NoContent))
+                : Results.Ok(ApiResponse.Fail(HttpStatusCode.NotFound, "Không thể tìm thấy bình luận"));
         }
 
         private static async Task<IResult> DeleteComment(
@@ -156,8 +113,8 @@ namespace TatBlog.WebApi.Endpoints
             IBlogRepository blogRepository)
         {
             return await blogRepository.DeleteCommentByIdAsync(id)
-                ? Results.NoContent()
-                : Results.NotFound($"Không thể tìm thấy bình luận với mã = {id}");
+                ? Results.Ok(ApiResponse.Success("Bình luận đã được xóa", HttpStatusCode.NoContent))
+                : Results.Ok(ApiResponse.Fail(HttpStatusCode.NotFound, "Không thể tìm thấy bình luận"));
         }
     }
 }

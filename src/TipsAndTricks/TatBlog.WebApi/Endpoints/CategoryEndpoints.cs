@@ -2,6 +2,8 @@
 using Mapster;
 using MapsterMapper;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
+using System.Net;
 using TatBlog.Core.Collections;
 using TatBlog.Core.DTO;
 using TatBlog.Core.Entities;
@@ -23,36 +25,33 @@ namespace TatBlog.WebApi.Endpoints
 
             routeGroupBuilder.MapGet("/", GetCategories)
                 .WithName("GetCategories")
-                .Produces<PaginationResult<CategoryItem>>();
+                .Produces<ApiResponse<PaginationResult<CategoryItem>>>();
 
             routeGroupBuilder.MapGet("/{id:int}", GetCategoryDetails)
                 .WithName("GetCategoryById")
-                .Produces<CategoryItem>()
-                .Produces(404);
+                .Produces<ApiResponse<CategoryItem>>();
 
             routeGroupBuilder.MapGet(
                     "/{slug:regex(^[a-z0-9_-]*$)}/posts",
                     GetPostsByCategorySlug)
                 .WithName("GetPostsByCategorySlugs")
-                .Produces<PaginationResult<PostDto>>();
+                .Produces<ApiResponse<PaginationResult<PostDto>>>();
 
             routeGroupBuilder.MapPost("/", AddCategory)
-               .WithName("AddNewCategory")
-               .AddEndpointFilter<ValidatorFilter<CategoryEditModel>>()
-               .Produces(201)
-               .Produces(400)
-               .Produces(409);
+                .WithName("AddNewCategory")
+                .AddEndpointFilter<ValidatorFilter<CategoryEditModel>>()
+                .Produces(401)
+                .Produces<ApiResponse<CategoryItem>>();
 
             routeGroupBuilder.MapPut("/{id:int}", UpdateCategory)
-              .WithName("UpdateAnCategory")
-              .Produces(204)
-              .Produces(400)
-              .Produces(409);
+                .WithName("UpdateAnCategory")
+                .Produces(401)
+                .Produces<ApiResponse<string>>();
 
             routeGroupBuilder.MapDelete("/{id:int}", DeleteCategory)
-              .WithName("DeleteAnCategory")
-              .Produces(204)
-              .Produces(404);
+                .WithName("DeleteAnCategory")
+                .Produces(401)
+                .Produces<ApiResponse<string>>();
 
             return app;
         }
@@ -67,7 +66,7 @@ namespace TatBlog.WebApi.Endpoints
             var paginationResult =
                 new PaginationResult<CategoryItem>(categoriesList);
             
-            return Results.Ok(paginationResult);
+            return Results.Ok(ApiResponse.Success(paginationResult));
         }
 
         private static async Task<IResult> GetCategoryDetails(
@@ -78,28 +77,8 @@ namespace TatBlog.WebApi.Endpoints
             var category = await blogRepository.GetCachedCategoryByIdAsync(id);
 
             return category == null
-                ? Results.NotFound($"Không tìm thấy chủ đề có mã số {id}")
-                : Results.Ok(mapper.Map<CategoryItem>(category));
-        }
-
-        private static async Task<IResult> GetPostsByAuthorId(
-            int id,
-            [AsParameters] PagingModel pagingModel,
-            IBlogRepository blogRepository)
-        {
-            var postQuery = new PostQuery()
-            {
-                AuthorId = id,
-                PublishedOnly = true
-            };
-
-            var postsList = await blogRepository.GetPagedPostQueryAsync(
-                postQuery, pagingModel,
-                posts => posts.ProjectToType<PostDto>());
-
-            var paginationResult = new PaginationResult<PostDto>(postsList);
-
-            return Results.Ok(paginationResult);
+                ? Results.Ok(ApiResponse.Fail(HttpStatusCode.NotFound, $"Không tìm chuyên mục có mã số {id}"))
+                : Results.Ok(ApiResponse.Success(mapper.Map<AuthorItem>(category)));
         }
 
         private static async Task<IResult> GetPostsByCategorySlug(
@@ -119,7 +98,7 @@ namespace TatBlog.WebApi.Endpoints
 
             var paginationResult = new PaginationResult<PostDto>(postsList);
 
-            return Results.Ok(paginationResult);
+            return Results.Ok(ApiResponse.Success(paginationResult));
         }
 
         private static async Task<IResult> AddCategory(
@@ -137,9 +116,8 @@ namespace TatBlog.WebApi.Endpoints
             var category = mapper.Map<Category>(model);
             await blogRepository.AddOrUpdateCategoryAsync(category);
 
-            return Results.CreatedAtRoute(
-                "GetCategoryById", new { category.Id },
-                mapper.Map<CategoryItem>(category));
+            return Results.Ok(ApiResponse.Success(
+                mapper.Map<CategoryItem>(category), HttpStatusCode.Created));
         }
 
      
@@ -148,21 +126,29 @@ namespace TatBlog.WebApi.Endpoints
             int id,
             CategoryEditModel model,
             IBlogRepository blogRepository,
+            IValidator<CategoryEditModel> validator,
             IMapper mapper)
         {
-            if (await blogRepository
-                .IsCategorySlugExistedAsync(0, model.UrlSlug))
+            var validationResult = await validator.ValidateAsync(model);
+            if (!validationResult.IsValid)
             {
-                return Results.Conflict(
-                    $"Slug '{model.UrlSlug}' đã được sử dụng");
+                return Results.Ok(ApiResponse.Fail(
+                HttpStatusCode.BadRequest, validationResult));
+            }
+
+            if (await blogRepository.IsCategorySlugExistedAsync(id, model.UrlSlug))
+            {
+                return Results.Ok(ApiResponse.Fail(
+                    HttpStatusCode.Conflict,
+                    $"Slug '{model.UrlSlug}' đã được sử dụng"));
             }
 
             var category = mapper.Map<Category>(model);
             category.Id = id;
 
             return await blogRepository.AddOrUpdateCategoryAsync(category)
-                ? Results.NoContent()
-                : Results.NotFound();
+                ? Results.Ok(ApiResponse.Success("Chuyên mục được cập nhật", HttpStatusCode.NoContent))
+                : Results.Ok(ApiResponse.Fail(HttpStatusCode.NotFound, "Không thể tìm thấy chuyên mục"));
         }
 
         private static async Task<IResult> DeleteCategory(
@@ -170,8 +156,8 @@ namespace TatBlog.WebApi.Endpoints
             IBlogRepository blogRepository)
         {
             return await blogRepository.DeleteCategoryByIdAsync(id)
-                ? Results.NoContent()
-                : Results.NotFound($"Không thể tìm thấy tác giả với mã = {id}");
+                ? Results.Ok(ApiResponse.Success("Chuyên mục đã được xóa", HttpStatusCode.NoContent))
+                : Results.Ok(ApiResponse.Fail(HttpStatusCode.NotFound, "Không thể tìm thấy chuyên mục"));
         }
     }
 }

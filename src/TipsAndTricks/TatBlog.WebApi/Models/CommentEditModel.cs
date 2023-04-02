@@ -2,12 +2,12 @@
 {
     public class CommentEditModel
     {
-        public string Name { get; set; }
+        public string FullName { get; set; }
 
-        public string UrlSlug { get; set; }
+        public bool Gender { get; set; }
+
+        public bool Approved { get; set; }
 
         public string Description { get; set; }
-
-        public bool ShowOnMenu { get; set; }
     }
 }

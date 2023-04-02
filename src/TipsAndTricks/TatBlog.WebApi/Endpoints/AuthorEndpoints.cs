@@ -38,10 +38,10 @@ namespace TatBlog.WebApi.Endpoints
                 .Produces<ApiResponse<PaginationResult<PostDto>>>();
 
             routeGroupBuilder.MapPost("/", AddAuthor)
-               .WithName("AddNewAuthor")
-               .AddEndpointFilter<ValidatorFilter<AuthorEditModel>>()
-               .Produces(401)
-               .Produces<ApiResponse<AuthorItem>>();
+                .WithName("AddNewAuthor")
+                .AddEndpointFilter<ValidatorFilter<AuthorEditModel>>()
+                .Produces(401)
+                .Produces<ApiResponse<AuthorItem>>();
 
             routeGroupBuilder.MapPost("/{id:int}/avatar", SetAuthorPicture)
                 .WithName("SetAuthorPicture")
@@ -89,7 +89,6 @@ namespace TatBlog.WebApi.Endpoints
             return author == null
                 ? Results.Ok(ApiResponse.Fail(HttpStatusCode.NotFound, $"Không tìm thấy tác giả có mã số {id}"))
                 : Results.Ok(ApiResponse.Success(mapper.Map<AuthorItem>(author)));
-
         }
 
         private static async Task<IResult> GetPostsByAuthorId(
@@ -206,7 +205,7 @@ namespace TatBlog.WebApi.Endpoints
             IAuthorRepository authorRepository)
         {
             return await authorRepository.DeleteAuthorByIdAsync(id)
-                ? Results.Ok(ApiResponse.Success("Tác giả được cập nhật", HttpStatusCode.NoContent))
+                ? Results.Ok(ApiResponse.Success("Tác giả đã được xóa", HttpStatusCode.NoContent))
                 : Results.Ok(ApiResponse.Fail(HttpStatusCode.NotFound, "Không thể tìm thấy tác giả"));
         }
 

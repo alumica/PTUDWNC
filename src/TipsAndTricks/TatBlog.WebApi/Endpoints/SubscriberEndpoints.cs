@@ -3,6 +3,7 @@ using FluentValidation;
 using Mapster;
 using MapsterMapper;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 using TatBlog.Core.Collections;
 using TatBlog.Core.DTO;
 using TatBlog.Core.Entities;
@@ -25,35 +26,28 @@ namespace TatBlog.WebApi.Endpoints
 
             routeGroupBuilder.MapGet("/", GetSubscribers)
                 .WithName("GetSubscribers")
-                .Produces<PaginationResult<Subscriber>>();
+                .Produces<ApiResponse<PaginationResult<Subscriber>>>();
 
             routeGroupBuilder.MapGet("/{id:int}", GetSubscriberDetails)
                 .WithName("GetSubscriberById")
-                .Produces<Subscriber>()
-                .Produces(404);
+                .Produces<ApiResponse<Subscriber>>();
 
             routeGroupBuilder.MapPost("/subscribe/{email}", Subscribe)
-               .WithName("AddNewSubscriber")
-               .Produces(201)
-               .Produces(400)
-               .Produces(409);
+                .WithName("AddNewSubscriber")
+                .Produces<ApiResponse<bool>>();
 
             routeGroupBuilder.MapPost("/unsubscribe/{email}", Unsubscribe)
-               .WithName("AddNewUnSubscriber")
-               .Produces(201)
-               .Produces(400)
-               .Produces(409);
+                .WithName("AddNewUnSubscriber")
+                .Produces<ApiResponse<bool>>();
 
             routeGroupBuilder.MapPost("/blocksubscribe/{email}", BlockSubscribe)
-               .WithName("BlockSubscriber")
-               .Produces(201)
-               .Produces(400)
-               .Produces(409);
+                .WithName("BlockSubscriber")
+                .Produces<ApiResponse<bool>>();
 
             routeGroupBuilder.MapDelete("/{id:int}", DeleteSubscriber)
-              .WithName("DeleteSubscriber")
-              .Produces(204)
-              .Produces(404);
+                .WithName("DeleteSubscriber")
+                .Produces(204)
+                .Produces(404);
 
             return app;
         }
@@ -67,7 +61,7 @@ namespace TatBlog.WebApi.Endpoints
 
             var paginationResult =
                 new PaginationResult<Subscriber>(subscribersList);
-            
+
             return Results.Ok(paginationResult);
         }
 
@@ -88,12 +82,11 @@ namespace TatBlog.WebApi.Endpoints
                 Email = email,
                 SubscribeDate = DateTime.Now,
             };
-            
+
             await subscriberRepository.SubscribeAsync(subscriber);
 
-            return Results.CreatedAtRoute(
-                "GetSubscriberById", new { subscriber.Id },
-                mapper.Map<Subscriber>(subscriber));
+            return Results.Ok(ApiResponse.Success(
+                mapper.Map<Subscriber>(subscriber), HttpStatusCode.Created));
         }
 
         private static async Task<IResult> Unsubscribe(
@@ -109,8 +102,8 @@ namespace TatBlog.WebApi.Endpoints
             }
 
             return await subscriberRepository.UnsubscribeAsync(email)
-                ? Results.NoContent()
-                : Results.NotFound($"Không thể tìm thấy người đăng ký với email = {email}");
+                ? Results.Ok(ApiResponse.Success("Đã hủy bỏ đăng ký", HttpStatusCode.NoContent))
+                : Results.Ok(ApiResponse.Fail(HttpStatusCode.NotFound, "Không tìm thấy email"));
         }
 
         private static async Task<IResult> BlockSubscribe(
@@ -130,8 +123,8 @@ namespace TatBlog.WebApi.Endpoints
             subscriber.Email = email;
 
             return await subscriberRepository.UnsubscribeAsync(email, subscriber.ResonUnsubscribe, false)
-                ? Results.NoContent()
-                : Results.NotFound($"Không thể tìm thấy người đăng ký với email = {email}");
+                ? Results.Ok(ApiResponse.Success("Đã chặn người đăng ký", HttpStatusCode.NoContent))
+                : Results.Ok(ApiResponse.Fail(HttpStatusCode.NotFound, "Không tìm thấy email"));
         }
 
         private static async Task<IResult> GetSubscriberDetails(
@@ -139,11 +132,11 @@ namespace TatBlog.WebApi.Endpoints
             ISubscriberRepository subscriberRepository,
             IMapper mapper)
         {
-            var category = await subscriberRepository.GetCachedSubscriberByIdAsync(id);
+            var subscriber = await subscriberRepository.GetCachedSubscriberByIdAsync(id);
 
-            return category == null
-                ? Results.NotFound($"Không tìm thấy người đăng ký có mã số {id}")
-                : Results.Ok(mapper.Map<Subscriber>(category));
+            return subscriber == null
+                ? Results.Ok(ApiResponse.Fail(HttpStatusCode.NotFound, $"Không tìm thấy người đăng ký có mã số {id}"))
+                : Results.Ok(ApiResponse.Success(mapper.Map<Subscriber>(subscriber)));
         }
 
         private static async Task<IResult> DeleteSubscriber(
@@ -151,8 +144,8 @@ namespace TatBlog.WebApi.Endpoints
             IBlogRepository blogRepository)
         {
             return await blogRepository.DeleteCategoryByIdAsync(id)
-                ? Results.NoContent()
-                : Results.NotFound($"Không thể tìm thấy tác giả với mã = {id}");
+                ? Results.Ok(ApiResponse.Success("Người đăng ký đã được xóa", HttpStatusCode.NoContent))
+                : Results.Ok(ApiResponse.Fail(HttpStatusCode.NotFound, "Không thể tìm thấy người đăng ký"));
         }
     }
 }

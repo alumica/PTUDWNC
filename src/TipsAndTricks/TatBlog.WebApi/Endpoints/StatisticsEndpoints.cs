@@ -24,38 +24,31 @@ namespace TatBlog.WebApi.Endpoints
 
             routeGroupBuilder.MapGet("/totalpost", GetTotalPost)
                 .WithName("GetTotalPost")
-                .Produces<int>()
-                .Produces(404);
+                .Produces<ApiResponse<int>>();
 
             routeGroupBuilder.MapGet("/postunpublished", GetNumberPostsUnpublished)
                 .WithName("GetNumberPostsUnpublished")
-                .Produces<int>()
-                .Produces(404);
+                .Produces<ApiResponse<int>>();
 
             routeGroupBuilder.MapGet("/categories", GetNumberCategories)
                 .WithName("GetNumberCategories")
-                .Produces<int>()
-                .Produces(404);
+                .Produces<ApiResponse<int>>();
 
             routeGroupBuilder.MapGet("/authors", GetNumberAuthors)
                 .WithName("GetNumberAuthors")
-                .Produces<int>()
-                .Produces(404);
+                .Produces<ApiResponse<int>>();
 
             routeGroupBuilder.MapGet("/commentunapproved", GetNumberCommentsUnapproved)
                 .WithName("GetNumberCommentsUnapproved")
-                .Produces<int>()
-                .Produces(404);
+                .Produces<ApiResponse<int>>();
 
             routeGroupBuilder.MapGet("/subscribers", GetNumberSubscribers)
                 .WithName("GetNumberSubscribers")
-                .Produces<int>()
-                .Produces(404);
+                .Produces<ApiResponse<int>>();
 
             routeGroupBuilder.MapGet("/subscriberstoday", GetNumberSubscribersToday)
                 .WithName("GetNumberSubscribersToday")
-                .Produces<int>()
-                .Produces(404);
+                .Produces<ApiResponse<int>>();
             return app;
         }
 
@@ -63,7 +56,7 @@ namespace TatBlog.WebApi.Endpoints
             IBlogRepository blogRepository)
         {
             int total = await blogRepository.GetTotalPostsAsync();
-            
+
             return Results.Ok(total);
         }
 
@@ -72,7 +65,7 @@ namespace TatBlog.WebApi.Endpoints
         {
             int number = await blogRepository.NumberPostsUnpublishedAsync();
 
-            return Results.Ok(number);
+            return Results.Ok(ApiResponse.Success(number));
         }
 
         private static async Task<IResult> GetNumberCategories(
@@ -80,7 +73,7 @@ namespace TatBlog.WebApi.Endpoints
         {
             int number = await blogRepository.NumberCategoriesAsync();
 
-            return Results.Ok(number);
+            return Results.Ok(ApiResponse.Success(number));
         }
 
         private static async Task<IResult> GetNumberAuthors(
@@ -88,7 +81,7 @@ namespace TatBlog.WebApi.Endpoints
         {
             int number = await authorRepository.NumberAuthorsAsync();
 
-            return Results.Ok(number);
+            return Results.Ok(ApiResponse.Success(number));
         }
 
 
@@ -97,7 +90,7 @@ namespace TatBlog.WebApi.Endpoints
         {
             int number = await blogRepository.NumberCommentsUnApprovedAsync();
 
-            return Results.Ok(number);
+            return Results.Ok(ApiResponse.Success(number));
         }
 
         private static async Task<IResult> GetNumberSubscribers(
@@ -105,7 +98,7 @@ namespace TatBlog.WebApi.Endpoints
         {
             int number = await subscriberRepository.NumberSubscribersAsync();
 
-            return Results.Ok(number);
+            return Results.Ok(ApiResponse.Success(number));
         }
 
 
@@ -114,7 +107,7 @@ namespace TatBlog.WebApi.Endpoints
         {
             int number = await subscriberRepository.NumberSubscribersTodayAsync();
 
-            return Results.Ok(number);
+            return Results.Ok(ApiResponse.Success(number));
         }
     }
 }
