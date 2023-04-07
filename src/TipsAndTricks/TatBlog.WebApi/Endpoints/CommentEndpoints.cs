@@ -26,6 +26,10 @@ namespace TatBlog.WebApi.Endpoints
                 .WithName("GetComments")
                 .Produces<ApiResponse<PaginationResult<Comment>>>();
 
+            routeGroupBuilder.MapGet("/bypost/{postId:int}", GetCommentsByPost)
+                .WithName("GetCommentsByPost")
+                .Produces<ApiResponse<IList<Comment>>>();
+
             routeGroupBuilder.MapGet("/{id:int}", GetCommentDetails)
                 .WithName("GetCommentById")
                 .Produces<ApiResponse<Comment>>();
@@ -62,6 +66,15 @@ namespace TatBlog.WebApi.Endpoints
             return Results.Ok(ApiResponse.Success(paginationResult));
         }
 
+        private static async Task<IResult> GetCommentsByPost(
+            int postId,
+            IBlogRepository blogRepository)
+        {
+            var commentsList = await blogRepository
+                .GetCommentsByPostIdAsync(postId);
+            return Results.Ok(ApiResponse.Success(commentsList));
+        }
+
         private static async Task<IResult> GetCommentDetails(
             int id,
             IBlogRepository blogRepository,
@@ -80,6 +93,7 @@ namespace TatBlog.WebApi.Endpoints
             IMapper mapper)
         {
             var comment = mapper.Map<Comment>(model);
+            comment.PostedDate = DateTime.Now;
             await blogRepository.AddOrUpdateCommentAsync(comment);
 
             return Results.Ok(ApiResponse.Success(

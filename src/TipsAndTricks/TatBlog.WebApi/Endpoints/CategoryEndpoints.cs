@@ -57,26 +57,10 @@ namespace TatBlog.WebApi.Endpoints
         }
 
         private static async Task<IResult> GetCategories(
-            [AsParameters] CategoryFilterModel model,
             IBlogRepository blogRepository)
         {
-            if (model.IsPaged)
-            {
-                var categoriesList = await blogRepository
-                .GetPagedCategoriesAsync(model, model.Name);
-
-                var paginationResult =
-                    new PaginationResult<CategoryItem>(categoriesList);
-
-                return Results.Ok(ApiResponse.Success(paginationResult));
-            }
-            else
-            {
-                var categoriesList = await blogRepository
-                .GetCategoriesAsync();
-
-                return Results.Ok(ApiResponse.Success(categoriesList));
-            }
+            var categories = await blogRepository.GetCategoriesAsync(); 
+            return Results.Ok(ApiResponse.Success(categories));
         }
 
         private static async Task<IResult> GetCategoryDetails(

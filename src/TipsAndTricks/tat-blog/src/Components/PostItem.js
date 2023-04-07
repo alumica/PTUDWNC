@@ -2,6 +2,7 @@ import TagList from './TagList';
 import Card from 'react-bootstrap/Card';
 import { Link } from 'react-router-dom';
 import { isEmptyOrSpaces } from '../Utils/Utils';
+import PostDetail from './Blog/PostDetail';
 
 const PostList = ({ postItem }) => {
     let imageUrl = isEmptyOrSpaces(postItem.imageUrl)
@@ -19,16 +20,20 @@ const PostList = ({ postItem }) => {
                     </div>
                     <div className='col-md-8'>
                         <Card.Body>
-                            <Card.Title>{postItem.title}</Card.Title>
+                            <Card.Title><Link to={`/blog/post/${postedDate.getFullYear()}/${postedDate.getMonth()}/${postedDate.getDay()}/${postItem.urlSlug}`}>{postItem.title}</Link></Card.Title>
                             <Card.Text>
                                 <small className='text-muted'>Tác giả:</small>
-                                <span className='text-primary m-1'>
-                                    {postItem.author.fullName}
-                                </span>
+                                <Link to={`/blog/author/${postItem.author.urlSlug}`}>
+                                    <span className='text-primary m-1'>
+                                        {postItem.author.fullName}
+                                    </span>
+                                </Link>
                                 <small className='text-muted'>Chủ đề:</small>
-                                <span className='text-primary m-1'>
-                                    {postItem.category.name}
-                                </span>
+                                <Link to={`/blog/category/${postItem.category.urlSlug}`}>
+                                    <span className='text-primary m-1'>
+                                        {postItem.category.name}
+                                    </span>
+                                </Link>
                             </Card.Text>
                             <Card.Text>
                                 {postItem.shortDescription}
@@ -37,7 +42,7 @@ const PostList = ({ postItem }) => {
                                 <TagList tagList={postItem.tags}/>
                             </div>
                             <div className='text-end'>
-                                <Link to={`/blog/post?year=${postedDate.getFullYear()}&month=${postedDate.getMonth()}&day=${postedDate.getDay()}&slug=${postItem.urlSlug}`}
+                                <Link to={`/blog/post/${postedDate.getFullYear()}/${postedDate.getMonth()}/${postedDate.getDay()}/${postItem.urlSlug}`}
                                     className='btn btn-primary'
                                     title={postItem.title}>
                                     Xem chi tiết

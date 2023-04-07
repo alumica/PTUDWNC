@@ -21,7 +21,7 @@ const SearchForm = () => {
                         type="text"
                         name="k"
                         value={keyword}
-                        onChange={() => setKeyword(e.target.value)}
+                        onChange={(e) => setKeyword(e.target.value)}
                         aria-label="Enter keyword"
                         aria-describedby="btnSearchPost"
                         placeholder="Enter keyword"/>

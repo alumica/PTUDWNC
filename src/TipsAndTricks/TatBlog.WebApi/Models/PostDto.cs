@@ -11,6 +11,8 @@
         // Mô tả hay giới thiệu ngắn về nội dung
         public string ShortDescription { get; set; }
 
+        public string Description { get; set; }
+
         // Tên định danh để tạo url
         public string UrlSlug { get; set; }
 
@@ -19,6 +21,8 @@
 
         // Số lượt xem, đọc bài viết
         public int ViewCount { get; set; }
+
+        public bool Published { get; set; }
 
         // Ngày giờ đăng bài
         public DateTime PostedDate { get; set; }

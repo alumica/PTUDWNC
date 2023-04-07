@@ -32,7 +32,7 @@ namespace TatBlog.WebApi.Endpoints
                 .Produces<ApiResponse<TagItem>>();
 
             routeGroupBuilder.MapGet(
-                    "/{slug:regex(^[a-z0-9_-]*$)}/tags",
+                    "/{slug:regex(^[a-z0-9_-]*$)}/posts",
                     GetPostsByTagSlug)
                 .WithName("GetPostsByTagSlugs")
                 .Produces<ApiResponse<PaginationResult<PostDto>>>();
@@ -60,13 +60,23 @@ namespace TatBlog.WebApi.Endpoints
             [AsParameters] TagFilterModel model,
             IBlogRepository blogRepository)
         {  
-            var tagsList = await blogRepository
+            if (model.IsPaged == true)
+            {
+                var tagsList = await blogRepository
                 .GetPagedTagsAsync(model, model.Name);
 
-            var paginationResult =
-                new PaginationResult<TagItem>(tagsList);
-            
-            return Results.Ok(ApiResponse.Success(paginationResult));
+                var paginationResult =
+                    new PaginationResult<TagItem>(tagsList);
+
+                return Results.Ok(ApiResponse.Success(paginationResult));
+            }
+            else
+            {
+                var tagsList = await blogRepository
+                .GetTagItemsAsync();
+
+                return Results.Ok(ApiResponse.Success(tagsList));
+            }
         }
 
         private static async Task<IResult> GetTagDetails(

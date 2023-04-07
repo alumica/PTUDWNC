@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TatBlog.Core.Entities
+namespace TatBlog.Core.DTO
 {
-    public class Contact
+    public class ContactItem
     {
         public int Id { get; set; }
 

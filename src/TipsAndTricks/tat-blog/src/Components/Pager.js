@@ -29,12 +29,13 @@ const Pager = ({ postquery, metadata }) => {
                 {hasNextPage
                 ? <Link to={`/blog/${actionName}?slug=${slug}&k=${keyword}&p=${pageNumber + 1}&ps=${pageSize}`}
                     className="btn btn-info ms-1">
-                    <FontAwesomeIcon icon={faArrowRight}/>
                     Trang sau&nbsp;
+                    <FontAwesomeIcon icon={faArrowRight}/>
                 </Link>
                 : <Button variant="outline-secodary" className="ms-1" disabled>
-                <FontAwesomeIcon icon={faArrowRight}/>
+                
                 Trang sau&nbsp;
+                <FontAwesomeIcon icon={faArrowRight}/>
                 </Button>
                 }
             </div>

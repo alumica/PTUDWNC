@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
-import PostItem from '../Components/PostItem';
-import Pager from '../Components/Pager';
-import { getPosts } from '../Services/BlogRepository';
+import { useLocation, useParams } from "react-router-dom";
+import PostItem from '../PostItem';
+import Pager from '../Pager';
+import { getPostsByCategorySlug } from '../../Services/BlogRepository';
 
-const Index = () => {
+const Category = () => {
+    const { slug } = useParams();
     const [postList, setPostList] = useState([]);
     const [metadata, setMetadata] = useState({});
 
@@ -19,9 +20,9 @@ const Index = () => {
         ps = query.get('ps') ?? 5;
 
     useEffect(() => {
-        document.title = 'Trang chủ';
+        document.title = 'Chuyên mục';
 
-        getPosts(k, ps, p).then(data => {
+        getPostsByCategorySlug(slug, ps, p).then(data => {
             if (data) {
                 setPostList(data.items);
                 setMetadata(data.metadata);
@@ -29,7 +30,7 @@ const Index = () => {
             else
                 setPostList([]);
         })
-    }, [k, p, ps]);
+    }, [slug, p, ps]);
 
     
 
@@ -56,4 +57,4 @@ const Index = () => {
     );  
 }
 
-export default Index;
+export default Category;

@@ -8,6 +8,6 @@ namespace TatBlog.WebApi.Models
         public string Name { get; set; }
 
         [DefaultValue(false)]
-        public bool IsPaged { get; set; }
+        public bool? IsPaged { get; set; }
     }
 }

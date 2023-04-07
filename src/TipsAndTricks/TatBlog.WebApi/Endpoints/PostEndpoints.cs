@@ -2,6 +2,7 @@
 using Mapster;
 using MapsterMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
 using TatBlog.Core.Collections;
@@ -23,9 +24,17 @@ namespace TatBlog.WebApi.Endpoints
         {
             var routeGroupBuilder = app.MapGroup("/api/posts");
 
-            routeGroupBuilder.MapGet("/", GetPosts)
-                .WithName("GetPosts")
-                .Produces<ApiResponse<PaginationResult<Post>>>();
+            //routeGroupBuilder.MapGet("/", GetPosts)
+            //    .WithName("GetPosts")
+            //    .Produces<ApiResponse<PaginationResult<Post>>>();
+
+            routeGroupBuilder.MapGet("/get-posts-filter", GetFilteredPosts)
+                .WithName("GetFilteredPost")
+                .Produces<ApiResponse<PostDto>>();
+
+            routeGroupBuilder.MapGet("/get-filter", GetFilter)
+                .WithName("GetFilter")
+                .Produces<ApiResponse<PostFilterModel>>();
 
             routeGroupBuilder.MapGet("/featured/{limit}", GetFeaturedPosts)
                 .WithName("GetPopularPosts")
@@ -49,9 +58,9 @@ namespace TatBlog.WebApi.Endpoints
 
             routeGroupBuilder.MapPost("/", AddPost)
                 .WithName("AddNewPost")
-                .AddEndpointFilter<ValidatorFilter<PostEditModel>>()
+                .Accepts<PostEditModel>("multipart/form-data")
                 .Produces(401)
-                .Produces<ApiResponse<PostDto>>();
+                .Produces<ApiResponse<PostItem>>();
 
             routeGroupBuilder.MapPost("/{id:int}/avatar", SetPostPicture)
                 .WithName("SetPostPicture")
@@ -76,18 +85,58 @@ namespace TatBlog.WebApi.Endpoints
             return app;
         }
 
-        private static async Task<IResult> GetPosts(
-            [AsParameters] PostFilterModel model,
-            IBlogRepository blogRepository,
-            IMapper mapper)
+        //private static async Task<IResult> GetPosts(
+        //    [AsParameters] PostFilterModel model,
+        //    IBlogRepository blogRepository,
+        //    IMapper mapper)
+        //{
+        //    var postQuery = mapper.Map<PostQuery>(model);
+
+        //    var postsList = await blogRepository.GetPagedPostQueryAsync(
+        //       postQuery, model,
+        //       posts => posts.ProjectToType<PostDto>());
+
+        //    var paginationResult = new PaginationResult<PostDto>(postsList);
+
+        //    return Results.Ok(ApiResponse.Success(paginationResult));
+        //}
+
+        private static async Task<IResult> GetFilter(
+            IAuthorRepository authorRepository,
+            IBlogRepository blogRepository)
         {
-            var postQuery = mapper.Map<PostQuery>(model);
+            var model = new PostFilterModel()
+            {
+                AuthorList = (await authorRepository.GetAuthorsAsync()).Select(a => new SelectListItem()
+                {
+                    Text = a.FullName,
+                    Value = a.Id.ToString()
+                }),
+                CategoryList = (await blogRepository.GetCategoriesAsync()).Select(c => new SelectListItem()
+                {
+                    Text = c.Name,
+                    Value = c.Id.ToString()
+                })
+            };
+            return Results.Ok(ApiResponse.Success(model));
+        }
 
+        private static async Task<IResult> GetFilteredPosts(
+            [AsParameters] PostFilterModel model,
+            [AsParameters] PagingModel pagingModel,
+            IBlogRepository blogRepository)
+        {
+            var postQuery = new PostQuery()
+            {
+                Keyword = model.Keyword,
+                CategoryId = model.CategoryId,
+                AuthorId = model.AuthorId,
+                PostedYear = model.Year,
+                PostedMonth = model.Month,
+            };
 
-            var postsList = await blogRepository.GetPagedPostQueryAsync(
-               postQuery, model,
-               posts => posts.ProjectToType<PostDto>());
-
+            var postsList = await blogRepository.GetPagedPostQueryAsync(postQuery, pagingModel, posts =>
+                posts.ProjectToType<PostDto>());
             var paginationResult = new PaginationResult<PostDto>(postsList);
 
             return Results.Ok(ApiResponse.Success(paginationResult));
@@ -127,10 +176,13 @@ namespace TatBlog.WebApi.Endpoints
         {
             var post = await blogRepository.GetCachedPostByIdAsync(id);
 
-            return post == null
-                ? Results.Ok(ApiResponse.Fail(HttpStatusCode.NotFound, $"Không tìm thấy bài viết có mã số {id}"))
-                : Results.Ok(ApiResponse.Success(mapper.Map<PostDto>(post)));
-
+            if (post == null)
+            {
+                await blogRepository.IncreaseViewCountAsync(id);
+                return Results.Ok(ApiResponse.Success(mapper.Map<PostDto>(post)));
+            }
+            else
+                return Results.Ok(ApiResponse.Fail(HttpStatusCode.NotFound, $"Không tìm thấy bài viết có mã số {id}"));
         }
 
         private static async Task<IResult> GetPostDetailsBySlug(
@@ -146,35 +198,65 @@ namespace TatBlog.WebApi.Endpoints
         }
 
         private static async Task<IResult> AddPost(
-            PostEditModel model,
+            HttpContext context,
             IBlogRepository blogRepository,
-            IMapper mapper)
+            IMapper mapper,
+            IMediaManager mediaManager)
         {
-            if (await blogRepository
-                .IsPostSlugExistedAsync(0, model.UrlSlug))
+            var model = await PostEditModel.BindAsync(context);
+            var slug = model.Title.GenerateSlug();
+            if (await blogRepository.IsPostSlugExistedAsync(model.Id, slug))
             {
                 return Results.Ok(ApiResponse.Fail(
-                    HttpStatusCode.Conflict, $"Slug '{model.UrlSlug}' đã được  sử dụng"));
+                HttpStatusCode.Conflict, $"Slug '{slug}' đã được sử dụng cho  bài viết khác"));
             }
+            var post = model.Id > 0 ? await blogRepository.GetPostByIdAsync(model.Id) : null;
 
-            var post = mapper.Map<Post>(model);
-            await blogRepository.AddOrUpdatePostAsync(post);
+            if (post == null)
+            {
+                post = new Post()
+                {
+                    PostedDate = DateTime.Now
+                };
+            }
+            post.Title = model.Title;
+            post.AuthorId = model.AuthorId;
+            post.CategoryId = model.CategoryId;
+            post.ShortDescription = model.ShortDescription;
+            post.Description = model.Description;
+            post.Meta = model.Meta;
+            post.Published = model.Published;
+            post.ModifiedDate = DateTime.Now;
+            post.UrlSlug = model.Title.GenerateSlug();
+            if (model.ImageFile?.Length > 0)
+            {
+                string hostname =
+               $"{context.Request.Scheme}://{context.Request.Host}{context.Request.PathBase}/",
+                uploadedPath = await
+               mediaManager.SaveFileAsync(model.ImageFile.OpenReadStream(), model.ImageFile.FileName,
+                model.ImageFile.ContentType);
+                if (!string.IsNullOrWhiteSpace(uploadedPath))
+                {
+                    post.ImageUrl = uploadedPath;
+                }
+            }
+            await blogRepository.CreateOrUpdatePostAsync(post, model.GetSelectedTags());
 
             return Results.Ok(ApiResponse.Success(
-                mapper.Map<PostDto>(post), HttpStatusCode.Created));
+            mapper.Map<PostItem>(post), HttpStatusCode.Created));
         }
 
         private static async Task<IResult> SetPostPicture(
-            int id, 
-            IFormFile imageFile,
-            IBlogRepository blogRepository,
-            IMediaManager mediaManager)
+        int id,
+        IFormFile imageFile,
+        IBlogRepository blogRepository,
+        IMediaManager mediaManager)
         {
             var imageUrl = await mediaManager.SaveFileAsync(
                 imageFile.OpenReadStream(),
                 imageFile.FileName, imageFile.ContentType);
 
-            if (string.IsNullOrWhiteSpace(imageUrl)) 
+            if (string.IsNullOrWhiteSpace(imageUrl))
             {
                 return Results.Ok(ApiResponse.Fail(
                     HttpStatusCode.BadRequest, "Không lưu được tập tin"));
