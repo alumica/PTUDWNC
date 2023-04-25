@@ -9,7 +9,7 @@ const CategoriesWidget = () => {
     useEffect(() => {
         getCategories().then(data => {
             if (data)
-                setCategoryList(data);
+                setCategoryList(data.items);
             else
                 setCategoryList([]);
         });

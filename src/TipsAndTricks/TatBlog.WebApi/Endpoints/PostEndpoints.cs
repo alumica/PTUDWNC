@@ -73,6 +73,11 @@ namespace TatBlog.WebApi.Endpoints
                 .Produces(401)
                 .Produces<ApiResponse<string>>();
 
+            routeGroupBuilder.MapPut("/{id:int}/togglepublished", TogglePublished)
+                .WithName("TogglePublished")
+                .Produces(401)
+                .Produces<ApiResponse<string>>();
+
             routeGroupBuilder.MapDelete("/{id:int}", DeletePost)
                 .WithName("DeleteAnPost")
                 .Produces(401)
@@ -176,7 +181,7 @@ namespace TatBlog.WebApi.Endpoints
         {
             var post = await blogRepository.GetCachedPostByIdAsync(id);
 
-            if (post == null)
+            if (post != null)
             {
                 await blogRepository.IncreaseViewCountAsync(id);
                 return Results.Ok(ApiResponse.Success(mapper.Map<PostDto>(post)));
@@ -210,6 +215,7 @@ namespace TatBlog.WebApi.Endpoints
                 return Results.Ok(ApiResponse.Fail(
                 HttpStatusCode.Conflict, $"Slug '{slug}' đã được sử dụng cho  bài viết khác"));
             }
+                        
             var post = model.Id > 0 ? await blogRepository.GetPostByIdAsync(model.Id) : null;
 
             if (post == null)
@@ -237,13 +243,13 @@ namespace TatBlog.WebApi.Endpoints
                 model.ImageFile.ContentType);
                 if (!string.IsNullOrWhiteSpace(uploadedPath))
                 {
-                    post.ImageUrl = uploadedPath;
+                    post.ImageUrl = hostname + uploadedPath;
                 }
             }
             await blogRepository.CreateOrUpdatePostAsync(post, model.GetSelectedTags());
 
             return Results.Ok(ApiResponse.Success(
-            mapper.Map<PostItem>(post), HttpStatusCode.Created));
+                mapper.Map<PostItem>(post), HttpStatusCode.Created));
         }
 
         private static async Task<IResult> SetPostPicture(
@@ -268,7 +274,7 @@ namespace TatBlog.WebApi.Endpoints
 
         private static async Task<IResult> UpdatePost(
             int id,
-            PostEditModel model,
+            [FromBody]PostEditModel model,
             IValidator<PostEditModel> validator,
             IBlogRepository blogRepository,
             IMapper mapper)
@@ -294,6 +300,20 @@ namespace TatBlog.WebApi.Endpoints
             return await blogRepository.AddOrUpdatePostAsync(post)
                 ? Results.Ok(ApiResponse.Success("Bài viết được cập nhật", HttpStatusCode.NoContent))
                 : Results.Ok(ApiResponse.Fail(HttpStatusCode.NotFound, "Không thể tìm thấy bài viết"));
+        }
+
+        private static async Task<IResult> TogglePublished(
+            int id,
+            IBlogRepository blogRepository)
+        {
+            var post = await blogRepository.GetPostByIdAsync(id);
+            if (post != null)
+            {
+                await blogRepository.SwitchPublisedAsync(id);
+                return Results.Ok(ApiResponse.Success("Đã chuyển đổi trạng tái xuất bản", HttpStatusCode.NoContent));
+            }
+            else
+                return Results.Ok(ApiResponse.Fail(HttpStatusCode.NotFound, $"Không tìm thấy bài viết có mã số {id}"));
         }
 
         private static async Task<IResult> DeletePost(

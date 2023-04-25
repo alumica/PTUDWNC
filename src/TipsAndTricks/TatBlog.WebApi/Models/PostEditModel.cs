@@ -61,7 +61,8 @@ namespace TatBlog.WebApi.Models
         }
         public static async ValueTask<PostEditModel> BindAsync(HttpContext context)
         {
-            var form = await context.Request.ReadFormAsync(); return new PostEditModel()
+            var form = await context.Request.ReadFormAsync();
+            return new PostEditModel()
             {
                 ImageFile = form.Files["ImageFile"],
                 Id = int.Parse(form["Id"]),
@@ -69,7 +70,7 @@ namespace TatBlog.WebApi.Models
                 ShortDescription = form["ShortDescription"],
                 Description = form["Description"],
                 Meta = form["Meta"],
-                Published = bool.Parse(form["Published"]),
+                Published = form["Published"] != "false",
                 CategoryId = int.Parse(form["CategoryId"]),
                 AuthorId = int.Parse(form["AuthorId"]),
                 SelectedTags = form["SelectedTags"]

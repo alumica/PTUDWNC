@@ -13,6 +13,9 @@
 
         public string Description { get; set; }
 
+        // Metadata
+        public string Meta { get; set; }
+
         // Tên định danh để tạo url
         public string UrlSlug { get; set; }
 

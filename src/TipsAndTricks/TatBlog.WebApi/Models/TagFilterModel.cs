@@ -1,9 +1,12 @@
-﻿namespace TatBlog.WebApi.Models
+﻿using System.ComponentModel;
+
+namespace TatBlog.WebApi.Models
 {
     public class TagFilterModel : PagingModel
     {
         public string Name { get; set; }
 
-        public bool? IsPaged { get; set; } = false;
+        [DefaultValue(false)]
+        public bool? IsPaged { get; set; }
     }
 }

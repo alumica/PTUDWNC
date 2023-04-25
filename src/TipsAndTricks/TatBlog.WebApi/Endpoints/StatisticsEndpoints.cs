@@ -24,7 +24,7 @@ namespace TatBlog.WebApi.Endpoints
 
             routeGroupBuilder.MapGet("/totalpost", GetTotalPost)
                 .WithName("GetTotalPost")
-                .Produces<ApiResponse<int>>();
+                .Produces<ApiResponse<PaginationResult<int>>>();
 
             routeGroupBuilder.MapGet("/postunpublished", GetNumberPostsUnpublished)
                 .WithName("GetNumberPostsUnpublished")
@@ -57,7 +57,7 @@ namespace TatBlog.WebApi.Endpoints
         {
             int total = await blogRepository.GetTotalPostsAsync();
 
-            return Results.Ok(total);
+            return Results.Ok(ApiResponse.Success(total));
         }
 
         private static async Task<IResult> GetNumberPostsUnpublished(

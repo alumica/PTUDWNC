@@ -50,48 +50,48 @@ namespace TatBlog.WebApi.Validations
                 .NotEmpty()
                 .WithMessage("Bạn phải chọn tác giả cho bài viết");
 
-            //RuleFor(x => x.SelectedTags)
-            //    .Must(HasAtLeastOneTag)
-            //    .WithMessage("Bạn phải nhập ít nhất một thẻ");
+            RuleFor(x => x.SelectedTags)
+                .Must(HasAtLeastOneTag)
+                .WithMessage("Bạn phải nhập ít nhất một thẻ");
 
-            //When(x => x.Id <= 0, () =>
-            //{
-            //    RuleFor(x => x.ImageFile)
-            //        .Must(x => x is { Length: > 0 })
-            //        .WithMessage("Bạn phải chọn hình ảnh cho bài viết");
-            //})
-            //.Otherwise(() =>
-            //{
-            //    RuleFor(x => x.ImageFile)
-            //        .MustAsync(SetImageIfNotExist)
-            //        .WithMessage("Bạn phải chọn hình ảnh cho bài viết");
-            //});
+            When(x => x.Id <= 0, () =>
+            {
+                RuleFor(x => x.ImageFile)
+                    .Must(x => x is { Length: > 0 })
+                    .WithMessage("Bạn phải chọn hình ảnh cho bài viết");
+            })
+            .Otherwise(() =>
+            {
+                RuleFor(x => x.ImageFile)
+                    .MustAsync(SetImageIfNotExist)
+                    .WithMessage("Bạn phải chọn hình ảnh cho bài viết");
+            });
         }
 
-        //// Kiểm tra xem người dùng đã nhập ít nhất 1 thẻ (tag)
-        //private bool HasAtLeastOneTag(
-        //    PostEditModel postModel, string selectedTags)
-        //{
-        //    return postModel.GetSelectedTags().Any();
-        //}
+        // Kiểm tra xem người dùng đã nhập ít nhất 1 thẻ (tag)
+        private bool HasAtLeastOneTag(
+            PostEditModel postModel, string selectedTags)
+        {
+            return postModel.GetSelectedTags().Any();
+        }
 
-        //// Kiểm tra xem bài viết đã có hình ảnh chưa.
-        //// Nếu chưa có, bắt buộc người dùng phải chọn file.
-        //private async Task<bool> SetImageIfNotExist(
-        //    PostEditModel postModel,
-        //    IFormFile imageFile,
-        //    CancellationToken cancellationToken)
-        //{ 
-        //    // Lấy thông tin bài viết từ CSDL
-        //    var post = await _blogRepository.GetPostByIdAsync(postModel.Id, false, cancellationToken);
+        // Kiểm tra xem bài viết đã có hình ảnh chưa.
+        // Nếu chưa có, bắt buộc người dùng phải chọn file.
+        private async Task<bool> SetImageIfNotExist(
+            PostEditModel postModel,
+            IFormFile imageFile,
+            CancellationToken cancellationToken)
+        {
+            // Lấy thông tin bài viết từ CSDL
+            var post = await _blogRepository.GetPostByIdAsync(postModel.Id, false, cancellationToken);
 
-        //    // Nếu bài viết đã có hình ảnh => Không bắt buộc chọn file
-        //    if (!string.IsNullOrWhiteSpace(post?.ImageUrl))
-        //        return true;
+            // Nếu bài viết đã có hình ảnh => Không bắt buộc chọn file
+            if (!string.IsNullOrWhiteSpace(post?.ImageUrl))
+                return true;
 
-        //    // Ngược lại (bài viết chưa có hình ảnh), kiểm tra xem
-        //    // người dùng đã chọn file hay chưa. Nếu chưa thì báo lỗi
-        //    return imageFile is { Length: > 0 };
-        //}
+            // Ngược lại (bài viết chưa có hình ảnh), kiểm tra xem
+            // người dùng đã chọn file hay chưa. Nếu chưa thì báo lỗi
+            return imageFile is { Length: > 0 };
+        }
     }
 }
